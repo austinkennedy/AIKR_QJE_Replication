@@ -71,7 +71,6 @@ See [`final_analysis/README.md`](final_analysis/README.md) for detailed analysis
 ### Stage 1: Get Unique Volumes
 - `Get Unique Volumes/` - Volume deduplication pipeline
   - `Get Unique Volumes for Rsync.ipynb` - Production deduplication notebook
-  - `Get Unique Volumes.ipynb` - Original Jupyter notebook (reference)
   - See [`Get Unique Volumes/README.md`](Get%20Unique%20Volumes/README.md) for details
 
 ### Stage 2: Text Preprocessing
