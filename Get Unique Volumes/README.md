@@ -4,7 +4,7 @@ This folder contains the first stage of the three-stage MALLET topic modeling pi
 
 ## Overview
 
-HathiTrust volumes often have multiple digitized copies from different university libraries. This stage intelligently selects one copy of each work:
+HathiTrust volumes often have multiple digitized copies from different university libraries. This stage selects one copy of each work:
 - **Unique volumes**: Keep the only available copy
 - **Non-serial duplicates**: Select any copy (all are equivalent)
 - **Serial publications**: Select the most complete set from a single university, then fill gaps with volumes from other universities
