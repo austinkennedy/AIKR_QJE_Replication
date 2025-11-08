@@ -45,8 +45,6 @@ python preprocess_htrc.py
 
 Converts HTRC Extracted Features files (`.json.bz2`) to cleaned text files (`.txt`). Applies 9-step pipeline including lemmatization, stopword removal, and modernization.
 
-**Performance**: Processes ~3.76 files/second (~13,500 files/hour) on a 24-core system. The full 264K corpus processes in approximately 19-20 hours.
-
 See [`Preprocessing/README.md`](Preprocessing/README.md) for detailed preprocessing documentation.
 
 **Stage 3: Topic Modeling** (Train MALLET model)
@@ -69,18 +67,6 @@ Takes LDA output, performs data processing, runs regression analysis, and genera
 
 See [`final_analysis/README.md`](final_analysis/README.md) for detailed analysis documentation.
 
-### Starting Point
-
-You can start from any stage depending on your data:
-- **HTRC workset CSV** → Run all four stages (complete pipeline)
-- **Downloaded .json.bz2 files** → Skip Stage 1, run Stages 2-4
-- **Pre-cleaned text files** → Skip Stages 1-2, run Stages 3-4
-- **LDA topic output** → Skip Stages 1-3, run Stage 4 only
-
----
-
-
-## What's Included
 
 ### Stage 1: Get Unique Volumes
 - `Get Unique Volumes/` - Volume deduplication pipeline
@@ -99,7 +85,6 @@ You can start from any stage depending on your data:
 - `LDA/` - MALLET topic modeling
   - `mallet_LDA.sh` - Main topic modeling script
   - `mallet_inference.sh` - Apply trained model to new documents
-  - `default_stoplist.txt` - Default stopword list (template)
   - See [`LDA/README.md`](LDA/README.md) for details
 
 ### Stage 4: Final Analysis
@@ -110,30 +95,12 @@ You can start from any stage depending on your data:
   - `configs/` - Configuration files
   - See [`final_analysis/README.md`](final_analysis/README.md) for details
 
-## Data Availability and Provenance Statements
-
-### Statement about Rights
-
-I certify that the author(s) of the manuscript have legitimate access to and permission to use the data used in this manuscript.
-
-### Summary of Availability
-
-All data are publicly available.
-
-### Details on each Data Source
-
 
 ## Description of Programs/Code
 
 ### Stage 1: Get Unique Volumes
 
 The volume deduplication pipeline is implemented in Jupyter notebooks that process HTRC workset metadata to identify and select unique volumes while handling serial publications intelligently.
-
-**Key Features:**
-- Deduplicates 383K volumes → 265K unique volumes
-- Intelligently selects complete serial sets
-- Handles multi-volume works and periodicals
-- Produces volume ID list for HTRC Analytics rsync download
 
 **Requirements:**
 - Python 3.8+
@@ -168,16 +135,6 @@ The preprocessing pipeline converts HTRC Extracted Features files (`.json.bz2`) 
 8. Lemmatization to base forms
 9. Output sorted by word frequency
 
-**Key Features:**
-- **Hardcoded parameters** for exact replication:
-  - POS tags: 20 specific tags (nouns, verbs, adjectives, etc.)
-  - Min word length: 2 characters
-  - Min word frequency: 2 per volume
-  - Stopword filters: Only `english_stopwords` + `roman_numerals` enabled
-- **Multiprocessing**: Auto-detects CPU cores (24 cores → ~13,500 files/hour)
-- **Memory efficient**: Processes large corpus without loading all files into memory
-- **Progress tracking**: Real-time progress bars with tqdm
-- **Robust error handling**: Continues processing on individual file errors
 
 **Requirements:**
 - Python 3.8+
@@ -200,10 +157,6 @@ vim config.sh  # Set INPUT_DIR, OUTPUT_DIR
 python preprocess_htrc.py --input INPUT_DIR --output OUTPUT_DIR
 ```
 
-**Performance:**
-- **Processing rate**: 3.76 files/second (13,536 files/hour)
-- **Full corpus (264K files)**: ~19-20 hours on 24-core system
-- **Memory usage**: <8GB RAM for typical volume
 
 **Output:**
 - One `.txt` file per input volume
@@ -269,15 +222,6 @@ For detailed documentation, see:
 - `lda/DEPLOY.md` - Step-by-step HPC deployment guide
 - `lda/test/README_TESTING.md` - Testing framework documentation
 
-**Testing:**
-
-A comprehensive test suite is included that validates the framework without requiring MALLET installation:
-```bash
-cd lda/test
-./run_tests.sh
-```
-
-The test suite includes 12 test scenarios with 32 assertions covering configuration management, CLI arguments, validation, and error handling.
 
 ### Stage 4: Final Analysis
 
@@ -311,40 +255,6 @@ Configuration files can be found under the `final_analysis/configs` directory.
 
 For more detailed documentation, see `final_analysis/README.md`.
 
----
-
-## Requirements Summary
-
-### System Requirements
-- **OS**: Linux, macOS, or Windows (with Bash via WSL/Git Bash)
-- **CPU**: Multi-core recommended (24 cores optimal for Stage 2)
-- **Memory**: 8GB RAM minimum, 16GB+ recommended
-- **Storage**: ~500GB for full corpus + outputs
-
-### Software Requirements
-
-**Stage 1: Get Unique Volumes**
-- Python 3.8+
-- pandas
-- tqdm
-- Jupyter Notebook
-
-**Stage 2: Preprocessing**
-- Python 3.8+
-- pandas, numpy
-- nltk (with WordNet)
-- htrc-feature-reader
-- tqdm
-
-**Stage 3: LDA**
-- MALLET 2.0.8+
-- Java 1.8+
-- Bash 4.0+
-
-**Stage 4: Final Analysis**
-- Python 3.11.1
-- R 4.0+ (for regression tables)
-- See `final_analysis/requirements.txt` for Python packages
 
 ---
 
