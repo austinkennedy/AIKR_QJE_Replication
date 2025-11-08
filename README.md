@@ -33,7 +33,7 @@ cd "Get Unique Volumes/"
 jupyter notebook "Get Unique Volumes for Rsync.ipynb"
 ```
 
-Deduplicates the initial HTRC workset (383K → 265K volumes), intelligently selecting complete serial sets. Outputs a list of unique volume IDs for download.
+Deduplicates the initial HTRC workset (383K → 265K volumes), selecting complete serial sets. Outputs a list of unique volume IDs for download.
 
 See [`Get Unique Volumes/README.md`](Get%20Unique%20Volumes/README.md) for detailed documentation.
 
@@ -79,21 +79,6 @@ You can start from any stage depending on your data:
 
 ---
 
-## Purpose
-
-These scripts are designed for **exact replication** of published research results. Model parameters are intentionally hardcoded to ensure identical results across different computing environments.
-
-## Validation and Quality Assurance
-
-This pipeline has undergone extensive validation (November 2025):
-- **500-file validation**: 100% semantic match with reference data (493/493 files)
-- **Full corpus deployment**: 264,433 files processed (100% complete)
-- **Empty file handling**: 683 empty placeholder files correctly generated for volumes with no clean text
-- **Continuous validation**: 100% semantic match maintained throughout processing
-- **Processing rate**: 3.76 files/second (~13,500 files/hour)
-- **Total validated**: 1,000+ files across multiple test rounds
-
-All scripts produce outputs that are semantically identical to reference data, with only cosmetic differences in word order that don't affect topic modeling results.
 
 ## What's Included
 
@@ -179,7 +164,7 @@ The preprocessing pipeline converts HTRC Extracted Features files (`.json.bz2`) 
 4. Part-of-speech filtering (20 POS tags retained)
 5. Minimum word length filter (≥2 characters)
 6. Minimum word frequency filter (≥2 occurrences per volume)
-7. Stopword removal (2 of 9 categories: English stopwords + Roman numerals)
+7. Stopword removal
 8. Lemmatization to base forms
 9. Output sorted by word frequency
 
