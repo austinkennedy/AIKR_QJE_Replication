@@ -1,24 +1,7 @@
 # MALLET Topic Modeling - LDA Pipeline
 
-Reproducible topic modeling framework using MALLET (MAchine Learning for LanguagE Toolkit) for text analysis research.
+Topic modeling framework using MALLET (MAchine Learning for LanguagE Toolkit) for text analysis research.
 
----
-
-## Overview
-
-This package provides a production-ready MALLET LDA topic modeling pipeline designed for **exact replication** of published research results. Model parameters are intentionally hardcoded to ensure identical results across different computing environments and runs.
-
-**Key Features:**
-- Fixed model parameters for scientific reproducibility
-- Flexible configuration via config file or command-line arguments
-- HPC/SLURM support with automatic resource detection
-- Comprehensive validation and error handling
-- Dry-run mode for testing without execution
-- Inference support for applying trained models to new documents
-
----
-
-## What's Included
 
 ### Core Scripts
 - `mallet_LDA.sh` - Main topic modeling script
@@ -57,19 +40,6 @@ sbatch --version
 
 ---
 
-## Model Parameters
-
-The following parameters are **hardcoded for reproducibility**:
-
-| Parameter | Value | Description |
-|-----------|-------|-------------|
-| Number of topics | 60 | Fixed topic count |
-| Random seed | 1 | Ensures identical results |
-| Optimization interval | 500 | Hyperparameter optimization frequency |
-
-**These cannot be changed** without modifying the script directly, as they are essential for exact replication of published results.
-
----
 
 ## Quick Start
 
@@ -178,52 +148,9 @@ INFERENCE_RANDOM_SEED="1"                     # Default: 1
 |----------|-------------|---------|
 | `--input-dir <path>` | Directory containing text files | Required |
 | `--output-dir <path>` | Directory for output files | Required |
-| `--stoplist <path>` | Stopword list file | default_stoplist.txt |
 | `--num-threads <n>` | Number of threads | Auto-detect |
 | `--dry-run` | Preview commands without executing | Off |
 | `--help, -h` | Show help message | - |
-
-### Examples
-
-**Basic usage:**
-```bash
-./mallet_LDA.sh --input-dir ./data --output-dir ./results
-```
-
-**Custom stoplist:**
-```bash
-./mallet_LDA.sh \
-    --input-dir ./data \
-    --output-dir ./results \
-    --stoplist ./my_stoplist.txt
-```
-
-**Specify threads:**
-```bash
-./mallet_LDA.sh \
-    --input-dir ./data \
-    --output-dir ./results \
-    --num-threads 32
-```
-
-**Preview without running (dry-run):**
-```bash
-./mallet_LDA.sh \
-    --input-dir ./data \
-    --output-dir ./results \
-    --dry-run
-```
-
-**HPC/SLURM submission:**
-```bash
-# Using config file
-sbatch mallet_LDA.sh
-
-# With command-line overrides
-sbatch mallet_LDA.sh \
-    --output-dir /pl/active/lab/special_run \
-    --num-threads 64
-```
 
 ---
 
@@ -348,21 +275,6 @@ scontrol show job JOBID
 
 ## Troubleshooting
 
-### "Output directory already exists"
-
-**Problem:** Output directory from previous run exists.
-
-**Solution:**
-```bash
-# Option 1: Remove old results
-rm -rf ./results
-
-# Option 2: Use different output directory
-./mallet_LDA.sh \
-    --input-dir ./data \
-    --output-dir ./results_v2
-```
-
 ### "Input directory is empty"
 
 **Problem:** No text files in input directory.
@@ -443,55 +355,6 @@ Use `--dry-run` to preview commands without executing:
 
 This shows exactly what will be executed without actually running the analysis.
 
-### Deployment Package
-
-Create a deployment package for distribution:
-
-```bash
-./package.sh
-```
-
-This creates `mallet_replication.zip` containing all scripts, documentation, and configuration templates.
-
-### Reading Output in R
-
-```r
-# Load topic distributions
-topics <- read.table("results/topics.txt",
-                     sep="\t",
-                     header=FALSE,
-                     skip=1)
-
-# Load topic keywords
-keys <- read.table("results/keys.txt",
-                   sep="\t",
-                   header=FALSE)
-
-# Examine top words for each topic
-head(keys)
-```
-
-### Reading Output in Python
-
-```python
-import pandas as pd
-
-# Load topic distributions
-topics = pd.read_csv("results/topics.txt",
-                     sep="\t",
-                     header=None,
-                     skiprows=1)
-
-# Load topic keywords
-keys = pd.read_csv("results/keys.txt",
-                   sep="\t",
-                   header=None)
-
-# Examine top words for each topic
-print(keys.head())
-```
-
----
 
 ## File Structure
 
@@ -507,52 +370,4 @@ LDA/
 └── README.md                  This documentation
 ```
 
-**Files to commit to git:**
-- `mallet_LDA.sh`, `mallet_inference.sh` (scripts)
-- `config.template.sh` (template, NOT `config.sh`)
-- `default_stoplist.txt` (stopword template)
-- `README.md`, `DEPLOY.md` (documentation)
-- `package.sh` (deployment tool)
 
-**Files ignored by git:**
-- `config.sh` (personal settings)
-- `*.mallet` (binary output files)
-- `results/`, `*_output/` (output directories)
-- `*.out` (SLURM output files)
-
----
-
-## Support
-
-For issues or questions:
-
-1. Check the [Troubleshooting](#troubleshooting) section above
-2. Ensure MALLET is properly installed: `mallet --help`
-3. Try `--dry-run` to preview commands: `./mallet_LDA.sh ... --dry-run`
-4. Review the script's help: `./mallet_LDA.sh --help`
-5. See [DEPLOY.md](DEPLOY.md) for HPC-specific guidance
-6. Check MALLET documentation: http://mallet.cs.umass.edu/
-
----
-
-## References
-
-- **MALLET Documentation:** http://mallet.cs.umass.edu/
-- **Topic Modeling Tutorial:** http://mallet.cs.umass.edu/topics.php
-- **MALLET Download:** http://mallet.cs.umass.edu/download.php
-
----
-
-## License
-
-[To be determined]
-
----
-
-## Acknowledgments
-
-This analysis uses MALLET (MAchine Learning for LanguagE Toolkit) developed by Andrew McCallum.
-
-**Citation for MALLET:**
-> McCallum, Andrew Kachites. "MALLET: A Machine Learning for Language Toolkit."
-> http://mallet.cs.umass.edu. 2002.
