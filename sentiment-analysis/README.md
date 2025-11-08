@@ -4,7 +4,7 @@ A unified Python toolkit for calculating multi-dimensional sentiment scores from
 
 ## Overview
 
-This project analyzes 264,433 historical book volumes from the HathiTrust Digital Library using multiple sentiment dictionaries to measure:
+This project analyzes historical book volumes from the HathiTrust Digital Library using multiple sentiment dictionaries to measure:
 - **Progress** - Words indicating advancement and development
 - **Optimism/Pessimism** - Positive and negative sentiment
 - **Regression** - Words indicating decline or backward movement
@@ -23,7 +23,6 @@ The tool supports both **simple (unweighted)** and **weighted** scoring methodol
   - Weighted: Count × weight / total_words formula
 - **Porter Stemming**: Automatic word normalization where needed
 - **Batch Processing**: Efficiently process thousands of volumes
-- **Validated Results**: All outputs match original notebook results within floating-point precision
 
 ## Project Structure
 
@@ -194,10 +193,6 @@ The word distribution generation follows the exact methodology from original Jup
 
 ## Validation
 
-All scoring outputs have been validated against original research results:
-- **11/11 dictionaries** produce identical scores (within floating-point precision ~1e-16)
-- **28 test volumes** scored using both pre-generated and fresh word distributions
-- **Zero substantive differences** between original and unified scoring methods
 
 See [DICTIONARY_TO_OUTPUT_MAPPING.md](DICTIONARY_TO_OUTPUT_MAPPING.md) for mappings between dictionary files and original output columns.
 
@@ -222,15 +217,6 @@ Results are saved with descriptive column names:
 
 ## Technical Details
 
-### Porter Stemming
-
-Most dictionaries use Porter stemming for word normalization. The tool automatically applies stemming where needed:
-- **Stemmed**: Progress, Optimism, Pessimism, Regression, Main, Secondary
-- **Not stemmed**: ChatGPT_Progress, Industrial dictionaries, APPLEBY, Industry+Optimism
-
-### Dictionary Loading
-
-The `load_dictionaries()` function includes a critical fix: it loads CSV files with `header=None` to include header row words in the stemming process, matching the original notebook behavior. This ensures perfect accuracy for Progress, Optimism, Pessimism, and Main/Secondary dictionaries.
 
 ### Performance
 
@@ -273,42 +259,4 @@ results.to_csv('sentiment_analysis_results.csv')
 print(f"Processed {len(results)} volumes across {len(results.columns)} metrics")
 ```
 
-## Citation
 
-If you use this tool in your research, please cite:
-
-```
-[Add your paper citation here]
-```
-
-## Related Research
-
-This tool was developed to support historical text analysis research examining:
-- The concept of "progress" in historical literature
-- Industrial revolution sentiment tracking
-- Optimism/pessimism trends across centuries
-- Relationship between industrial development and societal attitudes
-
-## Contributing
-
-This project is part of ongoing historical text analysis research. For questions or contributions, please contact the research team.
-
-## License
-
-[Add your license here - e.g., MIT, GPL, etc.]
-
-## Acknowledgments
-
-- Original methodology developed through Jupyter notebook experimentation
-- Dictionary curation by research team
-- HathiTrust Digital Library for historical text corpus
-- Porter Stemmer implementation from NLTK
-
-## Changelog
-
-### Version 1.0 (2025-11)
-- Initial unified scoring script release
-- Consolidated 3+ Jupyter notebooks into single tool
-- Added word distribution generation functions
-- Validated against all original research outputs
-- 11/11 dictionaries with perfect score matching
