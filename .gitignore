@@ -74,8 +74,6 @@ LDA_01_keys.txt
 LDA_01_topics.txt
 
 # Get Unique Volumes - Stage 1
-Get Unique Volumes/deduplicated_volume_list.txt
-Get Unique Volumes/EF_Rsync_deduplicated.sh
 Get Unique Volumes/hathi_full_*.txt.gz
 Get Unique Volumes/htrc_workset_final.csv
 Get Unique Volumes/__pycache__/

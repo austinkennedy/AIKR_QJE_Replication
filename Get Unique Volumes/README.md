@@ -26,12 +26,13 @@ pip install pandas tqdm jupyter
 
 1. **htrc_workset_final.csv** (75 MB)
    - Initial workset provided by HTRC Librarian
-   - Contains ~383K volumes printed in England
+   - Contains ~383K volumes printed in England between 1500-1900
 
 2. **hathi_full_20241001.txt.gz** (1.1 GB)
    - HathiTrust metadata file
-   - Download from: https://www.hathitrust.org/hathifiles
    - Use the most recent monthly release
+
+Download from: [Dropbox](https://www.dropbox.com/scl/fo/2qg8lv11j41ytjp2ru3k7/AHfF5xuQUVdtFNYKjcwMBa0?rlkey=py6mt8kztk72g8ity4hqlpbqc&st=9d8zn45r&dl=0)
 
 ### Running the Notebook
 
@@ -129,8 +130,8 @@ deduplicated_volume_list.txt (265K volumes)
 ### Step-by-Step Process
 
 1. **Filter workset** by year (1500-1900) and language (English)
-2. **Separate unique volumes** (no duplicates) from duplicated volumes
-3. **Load metadata** for duplicated volumes only (optimized chunked reading)
+2. **Separate unique volumes** (no duplicates) 
+3. **Load metadata** for duplicated volumes only
 4. **Identify non-serial volumes** (empty description field) → select first copy
 5. **Identify serial volumes** (non-empty description field)
 6. **Standardize descriptions** (v.1, vol.1, V1 → v.1)
@@ -153,13 +154,12 @@ For multi-volume works (e.g., a 10-volume encyclopedia):
 - **Get Unique Volumes for Rsync.ipynb** - Production notebook (improved)
 - **deduplicated_volume_list.txt** - Output file (generated)
 
-### Input Files (not in repo, see .gitignore)
+### Input Files (not in repo)
 - **htrc_workset_final.csv** - Initial workset
 - **hathi_full_20241001.txt.gz** - HathiTrust metadata
 
 ### Reference Files
-- **Get Unique Volumes.ipynb** - Original notebook (for reference)
-- **EF_Rsync_deduplicated.sh** - Example rsync script (for reference)
+- **EF_Rsync_deduplicated.sh** - Our rsync script
 
 
 ## Contact
