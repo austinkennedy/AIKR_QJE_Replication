@@ -5,16 +5,13 @@ Topic modeling framework using MALLET (MAchine Learning for LanguagE Toolkit) fo
 
 ### Core Scripts
 - `mallet_LDA.sh` - Main topic modeling script
-- `mallet_inference.sh` - Apply trained model to new documents
 
 ### Configuration
-- `config.template.sh` - Configuration template (copy to config.sh)
-- `default_stoplist.txt` - Default stopword list (placeholder)
+- Edit `mallet_LDA.sh` directly to configure paths
+- Uses `words_to_delete.txt` as the default stoplist
 
 ### Documentation
 - `README.md` - This documentation
-- `DEPLOY.md` - Step-by-step HPC deployment guide
-- `package.sh` - Create deployment package
 
 ---
 
@@ -43,43 +40,30 @@ sbatch --version
 
 ## Quick Start
 
-### 1. Create Configuration File
+### 1. Configure Script
 
-```bash
-cp config.template.sh config.sh
-vim config.sh  # Edit with your paths
-```
+Edit `mallet_LDA.sh` and set your paths (lines 50-51):
 
-Required settings in `config.sh`:
 ```bash
 INPUT_DIR="/path/to/your/documents"
 OUTPUT_DIR="/path/to/your/results"
 ```
 
-Optional settings:
+Optional settings (line 54):
 ```bash
-STOPLIST_FILE="/path/to/stoplist.txt"  # Leave empty for default
 NUM_THREADS="48"                        # Leave empty for auto-detect
 ```
 
-### 2. Make Scripts Executable
+### 2. Make Script Executable
 
 ```bash
-chmod +x mallet_LDA.sh mallet_inference.sh
+chmod +x mallet_LDA.sh
 ```
 
 ### 3. Run Topic Modeling
 
-**Using config file (recommended):**
 ```bash
 ./mallet_LDA.sh
-```
-
-**Or using command-line arguments:**
-```bash
-./mallet_LDA.sh \
-    --input-dir ./my_documents \
-    --output-dir ./results
 ```
 
 **For HPC/SLURM:**
@@ -100,57 +84,18 @@ Results are saved in your output directory:
 
 ## Configuration
 
-### Configuration Precedence
-
-Settings are applied in this order (later overrides earlier):
-1. **Script defaults** (lowest priority)
-2. **Config file** (`config.sh`)
-3. **Command-line arguments** (highest priority)
-
-### Configuration File
+Edit `mallet_LDA.sh` and modify the configuration section (lines 50-54):
 
 ```bash
-# 1. Copy template
-cp config.template.sh config.sh
+# REQUIRED: Edit these paths for your environment
+INPUT_DIR="/path/to/input/documents"     # Where your cleaned text files are
+OUTPUT_DIR="/path/to/output/results"     # Where results will be saved
 
-# 2. Edit with your settings
-vim config.sh
-
-# 3. Run (config file used automatically)
-./mallet_LDA.sh
+# OPTIONAL: Customize as needed
+NUM_THREADS="48"                         # CPU threads (leave empty for auto-detect)
 ```
 
-### Key Settings
-
-**Main Script (`mallet_LDA.sh`):**
-```bash
-INPUT_DIR="/path/to/input/documents"     # Required: Text files directory
-OUTPUT_DIR="/path/to/output/results"     # Required: Results directory
-STOPLIST_FILE="/path/to/stoplist.txt"    # Optional: Stopwords file
-NUM_THREADS="48"                         # Optional: CPU threads (auto-detect if empty)
-```
-
-**Inference Script (`mallet_inference.sh`):**
-```bash
-INFERENCER_FILE="/path/to/inferencer.mallet"  # From training run
-INFERENCE_INPUT="/path/to/new/documents"      # New documents
-INFERENCE_OUTPUT="/path/to/output.txt"        # Output file
-INFERENCE_RANDOM_SEED="1"                     # Default: 1
-```
-
----
-
-## Usage
-
-### Command-Line Arguments
-
-| Argument | Description | Default |
-|----------|-------------|---------|
-| `--input-dir <path>` | Directory containing text files | Required |
-| `--output-dir <path>` | Directory for output files | Required |
-| `--num-threads <n>` | Number of threads | Auto-detect |
-| `--dry-run` | Preview commands without executing | Off |
-| `--help, -h` | Show help message | - |
+**Note:** The script uses `words_to_delete.txt` as the default stoplist (hardcoded in the script).
 
 ---
 
@@ -180,70 +125,21 @@ topic_id alpha words...
 
 ---
 
-## Inference on New Documents
-
-Apply your trained model to new documents:
-
-### 1. Configure Inference
-
-Edit `config.sh`:
-```bash
-INFERENCER_FILE="/path/to/results/inferencer.mallet"
-INFERENCE_INPUT="/path/to/new/documents"
-INFERENCE_OUTPUT="/path/to/new_topics.txt"
-```
-
-### 2. Run Inference
-
-```bash
-./mallet_inference.sh
-```
-
-Or with command-line arguments:
-```bash
-./mallet_inference.sh \
-    --inferencer ./results/inferencer.mallet \
-    --input ./new_documents \
-    --output ./new_topics.txt
-```
-
-### Example Workflow
-
-```bash
-# Step 1: Train model
-./mallet_LDA.sh \
-    --input-dir ./training_data \
-    --output-dir ./model_output
-
-# Step 2: Apply to new documents
-./mallet_inference.sh \
-    --inferencer ./model_output/inferencer.mallet \
-    --input ./new_documents \
-    --output ./new_topics.txt
-```
-
----
-
 ## HPC/SLURM Usage
 
-### 1. Edit Configuration
+### 1. Edit Script Configuration
 
-```bash
-cp config.template.sh config.sh
-vim config.sh
-```
+Edit `mallet_LDA.sh` and set your paths (lines 50-51, 54):
 
-Example for HPC:
 ```bash
 INPUT_DIR="/pl/active/lab/data"
 OUTPUT_DIR="/pl/active/lab/results_$(date +%Y%m%d)"
-STOPLIST_FILE="/pl/active/lab/stoplist.txt"
 NUM_THREADS="48"
 ```
 
 ### 2. Customize SLURM Headers
 
-Edit `mallet_LDA.sh` (lines 12-20):
+Edit `mallet_LDA.sh` SLURM headers (lines 12-20):
 ```bash
 #SBATCH --account=YOUR_ACCOUNT
 #SBATCH --partition=YOUR_PARTITION
@@ -290,7 +186,7 @@ scontrol show job JOBID
 
 **Solution:**
 ```bash
-chmod +x mallet_LDA.sh mallet_inference.sh
+chmod +x mallet_LDA.sh
 ```
 
 ### Out of Memory Errors
@@ -307,7 +203,7 @@ chmod +x mallet_LDA.sh mallet_inference.sh
 ```bash
 # Set MALLET memory before running
 export MALLET_MEMORY=8g
-./mallet_LDA.sh --input-dir ./data --output-dir ./results
+./mallet_LDA.sh
 ```
 
 ### Module Load Errors (HPC)
@@ -325,7 +221,7 @@ MODULE_JAVA="java/11"  # Or whatever is available
 
 # Or load manually before running
 module load java/11
-./mallet_LDA.sh --input-dir ./data --output-dir ./results
+./mallet_LDA.sh
 ```
 
 ### Very Slow Training
@@ -340,33 +236,12 @@ module load java/11
 
 ---
 
-## Advanced Topics
-
-### Testing on Small Dataset
-
-Use `--dry-run` to preview commands without executing:
-
-```bash
-./mallet_LDA.sh \
-    --input-dir ./data \
-    --output-dir ./results \
-    --dry-run
-```
-
-This shows exactly what will be executed without actually running the analysis.
-
-
 ## File Structure
 
 ```
 LDA/
 ├── mallet_LDA.sh              Main topic modeling script
-├── mallet_inference.sh        Apply model to new documents
-├── config.template.sh         Configuration template (commit this)
-├── config.sh                  Your configuration (gitignored)
-├── default_stoplist.txt       Default stopword list
-├── package.sh                 Create deployment package
-├── DEPLOY.md                  HPC deployment guide
+├── words_to_delete.txt        Default stoplist (hardcoded)
 └── README.md                  This documentation
 ```
 
