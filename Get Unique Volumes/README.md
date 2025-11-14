@@ -151,7 +151,7 @@ For multi-volume works (e.g., a 10-volume encyclopedia):
 ## Files in This Folder
 
 ### Main Files
-- **Get Unique Volumes for Rsync.ipynb** - Production notebook (improved)
+- **Get Unique Volumes for Rsync.ipynb** - Production notebook
 - **deduplicated_volume_list.txt** - Output file (generated)
 
 ### Input Files (not in repo)
