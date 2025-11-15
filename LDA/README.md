@@ -95,9 +95,6 @@ OUTPUT_DIR="/path/to/output/results"     # Where results will be saved
 NUM_THREADS="48"                         # CPU threads (leave empty for auto-detect)
 ```
 
-**Note:** The script uses `words_to_delete.txt` as the default stoplist (hardcoded in the script).
-
----
 
 ## Output Files
 
@@ -241,7 +238,7 @@ module load java/11
 ```
 LDA/
 ├── mallet_LDA.sh              Main topic modeling script
-├── words_to_delete.txt        Default stoplist (hardcoded)
+├── words_to_delete.txt        Default stoplist
 └── README.md                  This documentation
 ```
 
