@@ -195,7 +195,7 @@ pip install -r requirements.txt
 
 **Quick Start**
 
-To run the final analysis, first download the `final_analysis_input` folder from the data repository included above. Place this folder under `final_analysis/data/` (or alternatively, change the `input_path` parameter in the config files under `final_analysis/configs`).
+To run the final analysis, first either run Stages 1-3 of the pipeline or download the `final_analysis_input` folder from the data repository included above. Place this folder and its contents under `final_analysis/data/` (or alternatively, change the `input_path` parameter in the config files under `final_analysis/configs`).
 
 The entirety of the final analysis can then be run by running the `final_analysis/main.py` script in Python:
 
@@ -213,7 +213,7 @@ Note that all necessary input data (i.e. the output of the LDA model and additio
 
 Configuration files can be found under the `final_analysis/configs` directory.
 
-For more detailed documentation, see `final_analysis/README.md`.
+For more detailed documentation, see [`final_analysis/README.md`](final_analysis/README.md).
 
 
 ---
@@ -241,9 +241,6 @@ For more detailed documentation, see `final_analysis/README.md`.
 ### Stage 4: Final Analysis
 - **Issue**: Missing input data
   - **Solution**: Download from data repository and place in `final_analysis/data/`
-
-- **Issue**: R script errors
-  - **Solution**: Install required R packages listed in `final_analysis/Rscripts/r_config.yaml`
 
 For additional troubleshooting, see individual stage README files.
 
