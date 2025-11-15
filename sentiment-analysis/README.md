@@ -6,9 +6,7 @@
 sentiment-analysis/
 ├── README.md                           # This file
 ├── sentiment_scorer.py                 # Main automated pipeline script
-├── DICTIONARY_TO_OUTPUT_MAPPING.md     # Dictionary to output column mapping
 └── dictionaries/                       # Sentiment dictionaries
-    ├── README.md                       # Dictionary documentation
     ├── Sentiment Scores Other.csv      # Main progress dictionary (4 metrics)
     ├── Progress Scores Main.csv        # 1708 dictionary version (2 metrics)
     ├── ChatGPT Progress Dictionary.csv # AI-generated progress words
