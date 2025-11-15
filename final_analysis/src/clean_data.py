@@ -55,8 +55,8 @@ def run_clean_data(config):
 
     print('Importing Data')
     if config['version'] == 'main_analysis':
-        topic_data = pd.read_csv(config['input_path'] + 'LDA_01_topics.txt', sep = '\t', header = None)
-        topic_keys = pd.read_csv(config['input_path'] + 'LDA_01_keys.txt', sep = '\t', header=None)
+        topic_data = pd.read_csv(config['input_path'] + 'topics.txt', sep = '\t', header = None)
+        topic_keys = pd.read_csv(config['input_path'] + 'keys.txt', sep = '\t', header=None)
     elif config['version'] == 'coherence':
         topic_data = pd.read_csv(config['input_path'] + '40_Coherence_topics.txt', sep = '\t', header = None)
         topic_keys = pd.read_csv(config['input_path'] + '40_Coherence_keys.txt', sep = '\t', header=None)
@@ -65,12 +65,12 @@ def run_clean_data(config):
     
 
     metadata = pd.read_csv(config['input_path'] + 'metadata_march25.csv')
-    sentiment = pd.read_csv(config['input_path'] + 'sentiment_results_march25.csv')
-    updated_progress = pd.read_csv(config['input_path'] + 'updated_progress_scores_march25.csv')
-    industry = pd.read_csv(config['input_path'] + 'industry_scores_jan2025.csv')
-    industry_scores_full_dict = pd.read_csv(config['input_path'] + 'industry_scores_full_dict.csv')
-    updated_optimism_industry = pd.read_csv(config['input_path'] + 'industry_optimism_may_2025.csv')
-    progress_chatgpt = pd.read_csv(config['input_path'] + 'progress_chatgpt_v2.csv')
+    sentiment = pd.read_csv(config['input_path'] + 'Sentiment_scores_other.csv')
+    updated_progress = pd.read_csv(config['input_path'] + 'progress_scores_main.csv')
+    industry = pd.read_csv(config['input_path'] + 'Industrialization_1643.csv')
+    industry_scores_full_dict = pd.read_csv(config['input_path'] + 'Industrialization_appleby.csv')
+    updated_optimism_industry = pd.read_csv(config['input_path'] + 'Optimism_abbr_industry_1708.csv')
+    progress_chatgpt = pd.read_csv(config['input_path'] + 'Sentiment_ChatGPT.csv')
 
 
     print('Volume Data Dimensions:' + str(topic_data.shape))
@@ -94,22 +94,22 @@ def run_clean_data(config):
     metadata = flag_words(df = metadata, colnames=['title_translations', 'description'], words=manual_and_related_words, new_colname='manual_flag')
     metadata = metadata.drop(columns=['title_translations', 'description'], axis=1)
 
-    sentiment = sentiment.rename(columns = {'Unnamed: 0': 'HTID', 'Regression': 'percent_regression', 'Pessimism': 'percent_pessimism', 'Optimism':'percent_optimistic', 'Progress': 'percent_progress_original'})
+    sentiment = sentiment.rename(columns = {'Filename': 'HTID', 'Regression': 'percent_regression', 'Pessimism': 'percent_pessimism', 'Optimism':'percent_optimistic', 'Progress': 'percent_progress_original'})
     sentiment['HTID'] = sentiment['HTID'].map(lambda x: x.replace('.txt', '')) #remove '.txt' at the end of each string for HTIDs
 
-    updated_progress = updated_progress.rename(columns={'Unnamed: 0': 'HTID', 'Main': 'percent_progress_main', 'Progress': 'percent_progress_secondary'})
+    updated_progress = updated_progress.rename(columns={'Filename': 'HTID', 'Main': 'percent_progress_main', 'Progress': 'percent_progress_secondary'})
     updated_progress['HTID'] = updated_progress['HTID'].map(lambda x: x.replace('.txt', ''))
 
-    industry = industry.rename(columns={'Unnamed: 0': 'HTID', 'Industrial Scores (June 23)':'industry'})
+    industry = industry.rename(columns={'Filename': 'HTID', '1643 Dictionary':'industry'})
     industry['HTID'] = industry['HTID'].map(lambda x: x.replace('.txt', ''))#remove '.txt' at the end of each string for HTIDs
 
-    industry_scores_full_dict = industry_scores_full_dict.rename(columns={'Unnamed: 0': 'HTID', 'Industrial Scores (All words)':'industry_full_dict'})
+    industry_scores_full_dict = industry_scores_full_dict.rename(columns={'Filename': 'HTID', 'Appleby Dictionary':'industry_full_dict'})
     industry_scores_full_dict['HTID'] = industry_scores_full_dict['HTID'].map(lambda x: x.replace('.txt', ''))#remove '.txt' at the end of each string for HTIDs
 
-    updated_optimism_industry = updated_optimism_industry.rename(columns={'Unnamed: 0': 'HTID', 'Optimism Double Meaning':'optimism_abbreviated', 'Industrialization Prior': 'industry_1708'})
+    updated_optimism_industry = updated_optimism_industry.rename(columns={'Filename': 'HTID', 'Optimism_Double_Meaning':'optimism_abbreviated', 'Industrialization_Prior': 'industry_1708'})
     updated_optimism_industry['HTID'] = updated_optimism_industry['HTID'].map(lambda x: x.replace('.txt', ''))#remove '.txt' at the end of each string for HTIDs
 
-    progress_chatgpt = progress_chatgpt.rename(columns={'Unnamed: 0': 'HTID', 'ChatGPT Progress': 'progress_chatgpt'})
+    progress_chatgpt = progress_chatgpt.rename(columns={'Filename': 'HTID', 'ChatGPT Progress': 'progress_chatgpt'})
     progress_chatgpt['HTID'] = progress_chatgpt['HTID'].map(lambda x: x.replace('.txt', ''))#remove '.txt' at the end of each string for HTIDs
 
     sentiment_dfs = [industry, industry_scores_full_dict, sentiment, updated_progress, updated_optimism_industry, progress_chatgpt]

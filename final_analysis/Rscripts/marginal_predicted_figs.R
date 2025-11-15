@@ -1,7 +1,6 @@
 rm(list=ls())
 options(scipen=999)
 
-
 library(yaml)
 library(tidyverse)
 library(fixest)

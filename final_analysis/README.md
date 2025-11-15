@@ -14,7 +14,9 @@ pip install -r requirements.txt
 
 The data for this part of the analysis can be found in the `final_analysis_input` folder in our data repository: [Data For Replication](https://www.dropbox.com/scl/fo/2qg8lv11j41ytjp2ru3k7/AHfF5xuQUVdtFNYKjcwMBa0?rlkey=py6mt8kztk72g8ity4hqlpbqc&st=9d8zn45r&dl=0)
 
-First download the data, create a directory named `data` within the `final_analysis` directory, and place the `final_analysis_input` folder and files into the `data` directory. Alternatively, one could store the data elsewhere and change the `input_path` parameters in the config files, as detailed below.
+This data includes the output of Stages 1-3 of the pipeline as detailed in [`README.md`](README.md) in the repository.
+
+Those wishing to replicate the final analysis should either run Stages 1-3 of the pipeline or download the data from the repository, then create a directory named `data` within the `final_analysis` directory, and place the `final_analysis_input` folder and files into the `data` directory. Alternatively, one could store the data elsewhere and change the `input_path` parameters in the config files, as detailed below.
 
 After this step is completed, the entirety of the final analysis can be run by running the `main.py` file in Python: 
 
@@ -40,21 +42,21 @@ The following is a table of data files provided in the `final_analysis_input` fo
 | `40_Coherence_topics.txt` | The volume-level weights associated with each topic, using the topics outputted by the LDA model using the Coherence score (Section C). |
 | `estc_1500_to_1800.csv` | Data for the ESTC section (Section D). |
 | `famous_books.csv` | The metadata for selected famous works in our corpus. |
-| `industry_optimism_may_2025.csv` | The volume-level optimism scores, double meanings excluded, and industry scores, using the 1708 dictionary. |
-| `industry_scores_full_dict.csv` | The volume-level industry scores, including words first used after 1643. |
-| `industry_scores_jan2025.csv` | The volume-level industry scores, excluding words first used after 1643. |
-| `LDA_01_keys.txt` | The topics and associated words outputted by the LDA model used in our main analysis. |
-| `LDA_01_topics.txt` | The volume-level weights associated with each topic, using the topics outputted by the LDA model used in our main analysis. |
+| `Optimism_abbr_industry_1708.csv` | The volume-level optimism scores, double meanings excluded, and industry scores, using the 1708 dictionary. |
+| `Industrialization_appleby.csv` | The volume-level industry scores, including words first used after 1643. |
+| `Industrialization_1643.csv` | The volume-level industry scores, excluding words first used after 1643. |
+| `keys.txt` | The topics and associated words outputted by the LDA model used in our main analysis. |
+| `topics.txt` | The volume-level weights associated with each topic, using the topics outputted by the LDA model used in our main analysis. |
 | `metadata_march25.csv` | The metadata for our corpus. |
-| `progress_chatgpt_v2.csv` | The volume-level scores for the progress dictionary produced by ChatGPT. |
-| `sentiment_results_march25.csv` | The sentiment scores used in our main analysis. |
+| `Sentiment_ChatGPT.csv` | The volume-level scores for the progress dictionary produced by ChatGPT. |
+| `Sentiment_scores_other.csv` | The sentiment scores for "Optimism", "Pessimism", "Regression", and the "Progress" dictionary including words first used after 1643 |
 | `translations.csv` | Contains flags for volumes that are translations. |
-| `updated_progress_scores_march25.csv` | Scores for the "progress" dictonaries used in the main analysis, as well as the 1708 dictionary. |
+| `progress_scores_main.csv` | Scores for the "progress" dictonaries used in the main analysis (excluding words after 1643), as well as the 1708 dictionary. |
 
 ## Scripts
 
 ### Structure
-The files in the `final_analysis` directory are structured as follows, assuming that a `data` directory has been created and the `final_analysis_input` folder has been downloaded and place inside:
+The files in the `final_analysis` directory are structured as follows, assuming that a `data` directory has been created and the `final_analysis_input` folder has been downloaded and placed inside:
 
 ```text
 .
@@ -63,6 +65,7 @@ The files in the `final_analysis` directory are structured as follows, assuming 
 ├── Rscripts/
 │   ├── additional_ternary_figs.R
 │   ├── famous_books.R
+│   ├── install_dependencies.R
 │   ├── marginal_predicted_figs.R
 │   ├── r_config.yaml
 │   └── regression_tables.R
@@ -115,6 +118,7 @@ As part of the analysis, the orchestration scripts run R scripts located in the 
 - `marginal_predicted_figs.R`: runs regressions, calculates predicted values, and produces predicted values figures.
 - `famous_books.R`: produces figure showing category weights for selected famous volumes.
 - `additional_ternary_figs.R`: creates additional ternary plots, including bi-scale ternary plots and plots with sub-triangles.
+- `install_dependencies.R`: installs R package dependencies.
 
 ### Configuration Files
 
