@@ -53,7 +53,6 @@ This downloads:
 ### Input Data
 
 - HTRC Extracted Features files (`.json.bz2` format)
-- Available from [HathiTrust Research Center](https://analytics.hathitrust.org/)
 
 ---
 
@@ -213,7 +212,7 @@ Normalize word forms using POS-aware lemmatization.
 
 ### Step 7: Modern/Archaic Mapping
 
-Standardize archaic language to modern equivalents.
+Standardize middle english language to modern equivalents.
 
 **Dictionary:** `MA_Dict_Final.csv` (~73KB)
 
@@ -249,17 +248,14 @@ Three dictionary files are required and included in `reference_data/`:
 ### 1. Master_Corrections.csv
 - **Size:** ~19 KB
 - **Purpose:** Spelling corrections for OCR errors
-- **Format:** `lemma,correct_spelling`
 
 ### 2. MA_Dict_Final.csv
 - **Size:** ~73 KB
-- **Purpose:** Modern/Archaic word mappings
-- **Format:** `orig,stand`
+- **Purpose:** Modern/middle English word mappings
 
 ### 3. world_cities.csv
 - **Size:** ~993 KB
 - **Purpose:** Geographic stopword filtering
-- **Format:** `name,country,subcountry,...`
 
 See [`reference_data/README.md`](reference_data/README.md) for detailed documentation.
 
@@ -457,30 +453,6 @@ chmod 755 /path/to/output
 
 ---
 
-## Testing
-
-### Running Tests
-
-```bash
-cd test/
-./run_tests.sh
-```
-
-### Test Coverage
-
-- Character cleaning (Greek, ligatures, Unicode)
-- Roman numeral generation
-- Processing parameter immutability
-- Dictionary loading
-- Configuration parsing
-
-### Adding Sample Data
-
-**For testing with real HTRC data:**
-1. Place 2-3 small `.json.bz2` files in `test/sample_data/`
-2. Run integration tests
-
----
 
 ## Advanced Topics
 
@@ -536,16 +508,11 @@ Preprocessing/
 ├── preprocess_htrc.py          Main preprocessing script
 ├── config.template.sh          Configuration template
 ├── README.md                   This documentation
-├── CHANGELOG.md                Version history and changes
 ├── reference_data/             Dictionary files
 │   ├── README.md
 │   ├── Master_Corrections.csv
 │   ├── MA_Dict_Final.csv
 │   └── world_cities.csv
-└── test/                       Testing infrastructure
-    ├── run_tests.sh
-    ├── test_preprocessing.py
-    └── sample_data/            Sample HTRC files
 ```
 
 ---

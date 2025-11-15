@@ -58,23 +58,6 @@ NUM_PROCESSES=""
 ERROR_LOG=""
 
 # ============================================================================
-# PROCESSING PARAMETERS (Read-Only)
-# ============================================================================
-# NOTE: Processing parameters (POS tags, minimum frequency, stopword filters)
-# are HARDCODED in preprocess_htrc.py and CANNOT be changed via config.
-# This ensures reproducibility of results.
-#
-# Fixed parameters:
-#   - POS Tags: 20 specific tags (NN, VB, JJ, etc.)
-#   - Min Word Length: 2 characters
-#   - Min Word Frequency: 2 per volume
-#   - Stopword Categories: All 8 categories enabled
-#
-# These values define the preprocessing methodology and are intentionally
-# immutable to ensure exact replication of published results.
-# ============================================================================
-
-# ============================================================================
 # USAGE EXAMPLES
 # ============================================================================
 #
