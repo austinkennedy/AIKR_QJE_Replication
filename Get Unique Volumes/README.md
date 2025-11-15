@@ -32,7 +32,7 @@ pip install pandas tqdm jupyter
    - HathiTrust metadata file
    - Use the most recent monthly release
 
-Download from: [Dropbox](https://www.dropbox.com/scl/fo/2qg8lv11j41ytjp2ru3k7/AHfF5xuQUVdtFNYKjcwMBa0?rlkey=py6mt8kztk72g8ity4hqlpbqc&st=9d8zn45r&dl=0)
+Download from the `Get Unique Volumes` folder here: [Dropbox](https://www.dropbox.com/scl/fo/2qg8lv11j41ytjp2ru3k7/AHfF5xuQUVdtFNYKjcwMBa0?rlkey=py6mt8kztk72g8ity4hqlpbqc&st=9d8zn45r&dl=0)
 
 ### Running the Notebook
 
