@@ -16,7 +16,7 @@ The data for this part of the analysis can be found in the `final_analysis_input
 
 This data includes the output of Stages 1-3 of the pipeline as detailed in [`README.md`](README.md) in the parent directory.
 
-Those wishing to replicate the final analysis should either run Stages 1-3 of the pipeline or download the data from the repository, then create a directory named `data` within the `final_analysis` directory, and place the `final_analysis_input` folder and files into the `data` directory. Alternatively, one could store the data elsewhere and change the `input_path` parameters in the config files, as detailed below.
+Those wishing to replicate the final analysis should either run Stages 1-3 of the pipeline or download the `final_analysis_input` folder from the data repository, then create a directory named `data` within the `final_analysis` directory, and place the `final_analysis_input` folder and files into the `data` directory. Alternatively, one could store the data elsewhere and change the `input_path` parameters in the config files, as detailed below.
 
 After this step is completed, the entirety of the final analysis can be run by running the `main.py` file in Python: 
 
