@@ -257,7 +257,6 @@ Three dictionary files are required and included in `reference_data/`:
 - **Size:** ~993 KB
 - **Purpose:** Geographic stopword filtering
 
-See [`reference_data/README.md`](reference_data/README.md) for detailed documentation.
 
 ---
 
