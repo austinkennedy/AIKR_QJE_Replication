@@ -126,3 +126,9 @@ HOURLY_*.md
 compare_*.py
 *_comparison.md
 *_analysis.txt
+
+#virtual environment folders
+venv/
+env/
+.venv/
+.env/
