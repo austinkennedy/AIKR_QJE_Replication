@@ -52,7 +52,7 @@ LIGATURES = {
 }
 
 # Stopword categories
-# Only english_stopwords and roman_numerals are filtered (matching PT_Nov2024.py)
+# Only english_stopwords and roman_numerals are filtered
 # All other categories are used only for stem validation, not filtering
 STOPWORD_FILTERS = {
     'cities': False,
@@ -155,7 +155,7 @@ roman_numerals = set([int_to_roman_lowercase(i) for i in range(501)])
 
 # Stopword sets with different purposes:
 # 1. stem_validation_dict: Large reference dictionary (~500k terms) used in lemmatize_or_stem()
-#    to validate whether a stemmed form is a legitimate word (not for filtering)
+#    to validate whether a stemmed form is a legitimate word 
 stem_validation_dict = cities.union(
     countries, people_names, english_stopwords, modern_words,
     continents, stems, days, months, roman_numerals
@@ -213,13 +213,9 @@ def parse_config_file(config_path):
 def parse_arguments():
     """Parse command-line arguments and configuration file"""
     parser = argparse.ArgumentParser(
-        description='HTRC Text Preprocessing for Topic Modeling - Replication Script',
+        description='HTRC Text Preprocessing for Topic Modeling',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog='''
-REPLICATION NOTICE:
-  Processing parameters (POS tags, minimum frequency, stopword filters) are
-  fixed for reproducibility. This script is designed for exact replication
-  of published research results.
 
 CONFIGURATION:
   Settings can be provided via config file OR command-line arguments.
@@ -355,7 +351,6 @@ def validate_environment(args):
         print("    Files may be overwritten! Continuing anyway...")
 
     # Check dictionary files exist (loaded from default paths at module import)
-    # These are now validated in validate_reference_data(), so we just report that they're loaded
     print(f"  [OK] Dictionary files loaded from default paths (reference_data/)")
 
     # Check Python libraries
@@ -403,7 +398,7 @@ def validate_environment(args):
 def print_configuration(args):
     """Display configuration for normalize_and_clean_wordparency"""
     print("\n" + "="*80)
-    print("HTRC Preprocessing - Replication Script")
+    print("HTRC Preprocessing")
     print("="*80)
     print("\nConfiguration:")
     print(f"  Input Directory:      {args.input}")
@@ -488,8 +483,7 @@ def scan_htrc_files(input_path: Path) -> pd.DataFrame:
 
 def getFeatureReader(final_ids):
     """Create FeatureReader from file paths"""
-    # Build file paths using vectorized pandas operations (MUCH faster than iterrows)
-    # Note: On Windows, Path separator will be backslash; on Unix, forward slash
+    # Build file paths using vectorized pandas operations 
     file_paths = list(final_ids['Path'] + os.sep + final_ids['Filename'])
     corpus = FeatureReader(file_paths)
     return corpus
@@ -628,7 +622,7 @@ def CleanAndWrite(corpus, output_path, num_processes=None, volume_limit=None):
     if num_processes is None:
         num_processes = mp.cpu_count()
 
-    # Use generator to avoid loading all volumes into memory at once (critical for 264K volumes)
+    # Use generator to avoid loading all volumes into memory at once
     def volume_generator():
         count = 0
         for volume in corpus.volumes():
@@ -668,7 +662,7 @@ def main():
     validate_environment(args)
     print()
 
-    # Validate reference data (loaded at module import time)
+    # Validate reference data 
     validate_reference_data(args)
     print()
 

@@ -27,6 +27,9 @@ test/mallet
 *.temp
 .tmp/
 temp/
+extra_output.txt
+missing_raw.txt
+nul
 
 # Backup files
 *~
@@ -105,6 +108,8 @@ Get Unique Volumes/rsync_*/
 Preprocessing/*_output/
 Preprocessing/cleaned_*/
 Preprocessing/*.log
+Preprocessing/config.sh
+Preprocessing/failed_volumes.txt
 
 # Log files
 *.log
