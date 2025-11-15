@@ -2,7 +2,6 @@
 Unified Sentiment Scoring Script
 
 This script calculates sentiment scores for all volumes using various dictionaries.
-It consolidates the logic from multiple Jupyter notebooks into a single, maintainable script.
 """
 
 import pandas as pd
@@ -30,10 +29,9 @@ def load_dictionaries():
 
     print("\nLoading dictionaries...")
 
-    # 1. Updated Progress List - 4 columns (progress, optimism, pessimism, regression)
-    # Load with header=None to include header words in data (matching notebook behavior)
-    print("  Loading: Updated Progress List")
-    df_words = pd.read_csv(os.path.join(dict_path, 'Updated Progress List.csv'), header=None)
+    # 1. Sentiment Scores Other - 4 columns (progress, optimism, pessimism, regression)
+    print("  Loading: Sentiment Scores Other")
+    df_words = pd.read_csv(os.path.join(dict_path, 'Sentiment Scores Other.csv'), header=None)
     for col_idx, col_name in [(0, 'Progress'), (1, 'Optimism'), (2, 'Pessimism'), (3, 'Regression')]:
         df = pd.DataFrame()
         df['word'] = [stemmer.stem(x) for x in df_words[col_idx].dropna()]
@@ -41,10 +39,9 @@ def load_dictionaries():
         simple_dicts[col_name] = df
         print(f"    - {col_name}: {len(df)} words")
 
-    # 2. Updated Progress List May 2023 - 2 columns (Main, Secondary)
-    # Load with header=None to include header words in data (matching notebook behavior)
-    print("  Loading: Updated Progress List May 2023")
-    df_words = pd.read_csv(os.path.join(dict_path, 'Updated Progress List May 2023.csv'), header=None)
+    # 2. Progress Scores Main - 2 columns (Main, Secondary)
+    print("  Loading: Progress Scores Main")
+    df_words = pd.read_csv(os.path.join(dict_path, 'Progress Scores Main.csv'), header=None)
     for col_idx, col_name in [(0, 'Main'), (1, 'Secondary')]:
         df = pd.DataFrame()
         df['word'] = [stemmer.stem(x) for x in df_words[col_idx].dropna()]  # Include all rows
@@ -56,23 +53,14 @@ def load_dictionaries():
     print("  Loading: ChatGPT Progress Dictionary")
     df_words = pd.read_csv(os.path.join(dict_path, 'ChatGPT Progress Dictionary.csv'))
     df = pd.DataFrame()
-    df['word'] = [stemmer.stem(x) for x in df_words['ChatGPT_Porgress'].dropna()]
+    df['word'] = [stemmer.stem(x) for x in df_words['ChatGPT_Progress'].dropna()]
     df = df.set_index('word')
     simple_dicts['ChatGPT_Progress'] = df
     print(f"    - ChatGPT_Progress: {len(df)} words")
 
-    # 4. Industrialization Dictionary (June 23) - 1 column, already stemmed
-    print("  Loading: Industrialization Dictionary (June 23)")
-    df_words = pd.read_csv(os.path.join(dict_path, 'Industrialization Dictionary (June 23).csv'))
-    df = pd.DataFrame()
-    df['word'] = df_words['word'].dropna()  # No stemming, already stemmed
-    df = df.set_index('word')
-    simple_dicts['Industrial_June23'] = df
-    print(f"    - Industrial_June23: {len(df)} words")
-
-    # 5. Industry and Optimism Dictionary (May 2025) - 2 columns
-    print("  Loading: Industry and Optimism Dictionary (May 2025)")
-    df_words = pd.read_csv(os.path.join(dict_path, 'Industry and Optimism Dictionary (May 2025).csv'))
+    # 4. Industry and Optimism Dictionary - 2 columns
+    print("  Loading: Industry and Optimism Dictionary")
+    df_words = pd.read_csv(os.path.join(dict_path, 'Industry and Optimism Dictionary.csv'))
     for col, dict_name in [('Industrialization Prior', 'Industrialization_Prior'),
                            ('Optimism Double Meaning', 'Optimism_Double_Meaning')]:
         df = pd.DataFrame()
@@ -81,19 +69,19 @@ def load_dictionaries():
         simple_dicts[dict_name] = df
         print(f"    - {dict_name}: {len(df)} words")
 
-    # 6. APPLEBY'S TOC (3-vote Threshold) - WEIGHTED, already stemmed
-    print("  Loading: APPLEBY'S TOC (3-vote Threshold) [WEIGHTED]")
-    df = pd.read_csv(os.path.join(dict_path, "APPLEBY'S TOC (3-vote Threshold).csv"))
+    # 5. Appleby Dictionary - WEIGHTED, already stemmed
+    print("  Loading: Appleby Dictionary [WEIGHTED]")
+    df = pd.read_csv(os.path.join(dict_path, 'Appleby Dictionary.csv'))
     df = df.set_index('word')
-    weighted_dicts['APPLEBY_3vote'] = df
-    print(f"    - APPLEBY_3vote: {len(df)} words (weighted)")
+    weighted_dicts['Appleby'] = df
+    print(f"    - Appleby: {len(df)} words (weighted)")
 
-    # 7. Industrialization Dictionary (May 24) - WEIGHTED, already stemmed
-    print("  Loading: Industrialization Dictionary (May 24) [WEIGHTED]")
-    df = pd.read_csv(os.path.join(dict_path, 'Industrialization Dictionary (May 24).csv'))
+    # 6. 1643 Dictionary - WEIGHTED, already stemmed
+    print("  Loading: 1643 Dictionary [WEIGHTED]")
+    df = pd.read_csv(os.path.join(dict_path, '1643 Dictionary.csv'))
     df = df.set_index('word')
-    weighted_dicts['Industrial_May24'] = df
-    print(f"    - Industrial_May24: {len(df)} words (weighted)")
+    weighted_dicts['Dict_1643'] = df
+    print(f"    - Dict_1643: {len(df)} words (weighted)")
 
     print(f"\nLoaded {len(simple_dicts)} simple dictionaries and {len(weighted_dicts)} weighted dictionaries")
 
@@ -166,38 +154,48 @@ def score_all_volumes(DF_ids, simple_dicts, weighted_dicts):
     Returns:
         DataFrame: Results with filename as index and score columns
     """
-    # Initialize results DataFrame with filenames as index
+    # Initialize results DataFrame with filenames as index and all columns
     filenames = DF_ids['Filename'].tolist()
-    results = pd.DataFrame(index=filenames)
+
+    # Create column names list (all dictionaries)
+    all_dict_names = list(simple_dicts.keys()) + list(weighted_dicts.keys())
+
+    # Initialize results with NaN
+    results = pd.DataFrame(index=filenames, columns=all_dict_names, dtype=float)
     results.index.name = 'Filename'
 
     print("\n" + "="*60)
     print("SCORING ALL VOLUMES")
     print("="*60)
+    print(f"Total volumes: {len(DF_ids):,}")
+    print(f"Simple dictionaries: {len(simple_dicts)}")
+    print(f"Weighted dictionaries: {len(weighted_dicts)}")
+    print(f"Total metrics: {len(all_dict_names)}")
+    print("="*60)
 
-    # Score all volumes for each simple dictionary
-    print("\nProcessing simple (unweighted) dictionaries...")
-    for dict_name, dict_df in simple_dicts.items():
-        print(f"  Scoring: {dict_name}")
-        scores = []
+    print("\nProcessing all volumes...")
+    for _, row in tqdm(DF_ids.iterrows(), total=len(DF_ids), desc="Volumes"):
+        filename = row['Filename']
+        volume_path = row['Path']
 
-        for idx, row in tqdm(DF_ids.iterrows(), total=len(DF_ids), desc=f"  {dict_name}"):
-            score = score_volume_simple(row['Path'], dict_df)
-            scores.append(score)
+        # Load volume word distribution 
+        df_vol = pd.read_csv(volume_path).set_index('word')
+        total_words = df_vol['total_words'].max()
 
-        results[dict_name] = scores
+        # Score against all simple dictionaries
+        for dict_name, dict_df in simple_dicts.items():
+            # Join and calculate score 
+            df_joined = dict_df.join(df_vol, how='left').fillna(0)
+            score = df_joined['pct'].sum()
+            results.loc[filename, dict_name] = score
 
-    # Score all volumes for each weighted dictionary
-    print("\nProcessing weighted dictionaries...")
-    for dict_name, dict_df in weighted_dicts.items():
-        print(f"  Scoring: {dict_name}")
-        scores = []
-
-        for idx, row in tqdm(DF_ids.iterrows(), total=len(DF_ids), desc=f"  {dict_name}"):
-            score = score_volume_weighted(row['Path'], dict_df)
-            scores.append(score)
-
-        results[dict_name] = scores
+        # Score against all weighted dictionaries
+        for dict_name, dict_df in weighted_dicts.items():
+            # Join and calculate score 
+            df_joined = dict_df.join(df_vol, rsuffix='_data', how='left').fillna(0)
+            df_joined['count_x_weight'] = df_joined['count'].multiply(df_joined['count_data'])
+            score = df_joined['count_x_weight'].sum() / total_words
+            results.loc[filename, dict_name] = score
 
     print(f"\nScoring complete! Generated {len(results)} rows × {len(results.columns)} columns")
 
@@ -208,7 +206,6 @@ def generate_word_distribution(raw_text_path, output_path):
     """
     Generate word distribution file from raw text.
 
-    Matches the exact methodology from the original notebooks:
     1. Read raw text
     2. Split into words
     3. Count occurrences
@@ -282,6 +279,11 @@ def generate_all_distributions(source_dir, output_dir, filenames):
                 failed.append((filename, "Source file not found"))
                 continue
 
+            # Skip if output already exists
+            if os.path.exists(output_path):
+                successful += 1
+                continue
+
             df = generate_word_distribution(source_path, output_path)
             successful += 1
 
@@ -323,127 +325,184 @@ def get_prob_df():
     return UK_files
 
 
+def save_final_analysis_format(results, output_dir='./output_final_analysis_format'):
+    """
+    Split unified results into 6 separate CSV files.
+
+    Args:
+        results: DataFrame with all sentiment scores (output from score_all_volumes)
+        output_dir: Directory to save the 6 output files 
+
+    Output files:
+        1. Sentiment_scores_other.csv - Progress, Optimism, Pessimism, Regression
+        2. progress_scores_main.csv - Main, Progress
+        3. Sentiment_ChatGPT.csv - ChatGPT Progress 
+        4. Optimism_abbr_industry_1708.csv - Industrialization_Prior, Optimism_Double_Meaning
+        5. Industrialization_1643.csv - 1643 Dictionary scores 
+        6. Industrialization_appleby.csv - Appleby Dictionary scores 
+    """
+    # Create output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
+
+    print("\n" + "="*60)
+    print("SAVING FILES IN FINAL_ANALYSIS FORMAT")
+    print("="*60)
+    print(f"Output directory: {output_dir}\n")
+
+    # 1. Sentiment_scores_other.csv
+    file1 = os.path.join(output_dir, 'Sentiment_scores_other.csv')
+    results[['Progress', 'Optimism', 'Pessimism', 'Regression']].to_csv(file1)
+    print(f"[OK] Saved: Sentiment_scores_other.csv")
+
+    # 2. progress_scores_main.csv (rename Secondary → Progress)
+    df2 = results[['Main', 'Secondary']].copy()
+    df2.rename(columns={'Secondary': 'Progress'}, inplace=True)
+    file2 = os.path.join(output_dir, 'progress_scores_main.csv')
+    df2.to_csv(file2)
+    print(f"[OK] Saved: progress_scores_main.csv")
+
+    # 3. Sentiment_ChatGPT.csv (rename column)
+    df3 = results[['ChatGPT_Progress']].copy()
+    df3.rename(columns={'ChatGPT_Progress': 'ChatGPT Progress'}, inplace=True)
+    file3 = os.path.join(output_dir, 'Sentiment_ChatGPT.csv')
+    df3.to_csv(file3)
+    print(f"[OK] Saved: Sentiment_ChatGPT.csv")
+
+    # 4. Optimism_abbr_industry_1708.csv
+    file4 = os.path.join(output_dir, 'Optimism_abbr_industry_1708.csv')
+    results[['Industrialization_Prior', 'Optimism_Double_Meaning']].to_csv(file4)
+    print(f"[OK] Saved: Optimism_abbr_industry_1708.csv")
+
+    # 5. Industrialization_1643.csv (1643 Dictionary scores)
+    df5 = results[['Dict_1643']].copy()
+    df5.rename(columns={'Dict_1643': '1643 Dictionary'}, inplace=True)
+    file5 = os.path.join(output_dir, 'Industrialization_1643.csv')
+    df5.to_csv(file5)
+    print(f"[OK] Saved: Industrialization_1643.csv")
+
+    # 6. Industrialization_appleby.csv (Appleby Dictionary scores)
+    df6 = results[['Appleby']].copy()
+    df6.rename(columns={'Appleby': 'Appleby Dictionary'}, inplace=True)
+    file6 = os.path.join(output_dir, 'Industrialization_appleby.csv')
+    df6.to_csv(file6)
+    print(f"[OK] Saved: Industrialization_appleby.csv")
+
+    print(f"\n{'='*60}")
+    print(f"Successfully saved 6 files to: {output_dir}")
+    print(f"These files can be copied to final_analysis/data/final_analysis_input/")
+    print("="*60)
+
+    return output_dir
+
+
 if __name__ == "__main__":
+    # ========================================
+    # CONFIGURATION
+    # ========================================
+    RAW_TEXT_SOURCE = r'F:\Claude\mallet-replication\Full_Deployment_Output'
+    WORD_DIST_OUTPUT = r'./word_distributions'
+    OUTPUT_DIR = './output'
+
     print("="*60)
-    print("SENTIMENT SCORER - TESTING MODE")
+    print("SENTIMENT SCORER - FULL DATASET")
+    print("="*60)
+    print(f"Raw text source:    {RAW_TEXT_SOURCE}")
+    print(f"Word dist output:   {WORD_DIST_OUTPUT}")
+    print(f"Output directory:   {OUTPUT_DIR}")
     print("="*60)
 
-    # Load dictionaries
+    # ========================================
+    # STEP 1: Get list of all files
+    # ========================================
+    print("\n" + "="*60)
+    print("STEP 1: Scanning raw text directory")
+    print("="*60)
+
+    all_filenames = [f for f in os.listdir(RAW_TEXT_SOURCE) if f.endswith('.txt')]
+
+    print(f"Found {len(all_filenames)} text files")
+    print(f"First file: {all_filenames[0]}")
+    print(f"Last file:  {all_filenames[-1]}")
+
+    # ========================================
+    # STEP 2: Generate word distributions
+    # ========================================
+    print("\n" + "="*60)
+    print("STEP 2: Generating word distributions from raw text")
+    print("="*60)
+
+    num_generated = generate_all_distributions(
+        source_dir=RAW_TEXT_SOURCE,
+        output_dir=WORD_DIST_OUTPUT,
+        filenames=all_filenames
+    )
+
+    print(f"\nSuccessfully generated {num_generated}/{len(all_filenames)} word distributions")
+
+    # ========================================
+    # STEP 3: Load dictionaries
+    # ========================================
+    print("\n" + "="*60)
+    print("STEP 3: Loading sentiment dictionaries")
+    print("="*60)
+
     simple_dicts, weighted_dicts = load_dictionaries()
+    print(f"Loaded {len(simple_dicts)} simple dictionaries and {len(weighted_dicts)} weighted dictionaries")
 
+    # ========================================
+    # STEP 4: Create volume index
+    # ========================================
     print("\n" + "="*60)
-    print("Simple dictionaries loaded:")
-    for name, df in simple_dicts.items():
-        print(f"  {name}: {len(df)} words")
-
-    print("\nWeighted dictionaries loaded:")
-    for name, df in weighted_dicts.items():
-        print(f"  {name}: {len(df)} words, columns: {list(df.columns)}")
-
-    # Load volume distributions
-    print("\n" + "="*60)
-    print("Loading volume word distributions...")
-    DF_ids = get_prob_df()
-
-    print(f"\nLoaded {len(DF_ids)} volume files")
-    print(f"\nFirst 5 entries:")
-    print(DF_ids.head())
-
-    print("\n" + "="*60)
-    print("TESTING SCORING ON SINGLE VOLUME")
+    print("STEP 4: Creating volume index")
     print("="*60)
 
-    # Test scoring on first volume
-    test_vol = DF_ids.iloc[0]
-    print(f"\nTesting on: {test_vol['Filename']}")
-    print(f"Path: {test_vol['Path']}")
+    # Create volume index from generated word distributions
+    volume_data = []
+    for filename in all_filenames:
+        htid = filename.replace(".json.bz2", "").replace("+", ":").replace(",", ".").replace("=", "/")
+        path = os.path.join(WORD_DIST_OUTPUT, filename)
+        volume_data.append([htid, filename, path])
 
-    print("\n--- Simple Scoring Test ---")
-    test_score = score_volume_simple(test_vol['Path'], simple_dicts['Progress'])
-    print(f"Progress score: {test_score}")
+    DF_ids = pd.DataFrame(volume_data, columns=["HTID", "Filename", "Path"]).set_index('HTID')
+    print(f"Created index for {len(DF_ids)} volumes")
 
-    print("\n--- Weighted Scoring Test ---")
-    test_score_weighted = score_volume_weighted(test_vol['Path'], weighted_dicts['APPLEBY_3vote'])
-    print(f"APPLEBY_3vote score: {test_score_weighted}")
+    # ========================================
+    # STEP 5: Calculate sentiment scores
+    # ========================================
+    print("\n" + "="*60)
+    print("STEP 5: Calculating sentiment scores")
+    print("="*60)
 
-    # Score all volumes
     results = score_all_volumes(DF_ids, simple_dicts, weighted_dicts)
 
-    # Save results
-    output_path = './generated_scores.csv'
-    results.to_csv(output_path)
-    print(f"\nResults saved to: {output_path}")
-
-    # Display results
+    # ========================================
+    # STEP 6: Save outputs
+    # ========================================
     print("\n" + "="*60)
-    print("GENERATED SCORES (First 5 rows)")
-    print("="*60)
-    print(results.head())
-
-    # Load ground truth for comparison
-    print("\n" + "="*60)
-    print("COMPARING TO GROUND TRUTH")
+    print("STEP 6: Saving outputs")
     print("="*60)
 
-    ground_truth = pd.read_csv('./ground_truth_scores.csv', index_col='Filename')
+    # Create output directory
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    # Map our column names to ground truth column names
-    # Note: Industrial_June23 label in ground truth was actually generated using May24 weighted dictionary
-    column_mapping = {
-        'Progress': 'March2025_Progress',
-        'Optimism': 'March2025_Optimism',
-        'Pessimism': 'March2025_Pessimism',
-        'Regression': 'March2025_Regression',
-        'Main': 'March2025_MainSec_Main',
-        'Secondary': 'March2025_MainSec_Progress',
-        'ChatGPT_Progress': 'Aug2025_ChatGPT Progress',
-        'Industrial_June23': None,  # Not used - was mislabeled
-        'Industrial_May24': 'Indus_Jan2025_Industrial Scores (June 23)',  # This is the correct mapping!
-        'Industrialization_Prior': 'IndusOptim_May2025_Industrialization Prior',
-        'Optimism_Double_Meaning': 'IndusOptim_May2025_Optimism Double Meaning',
-        'APPLEBY_3vote': 'Indus_April2025_Industrial Scores (All words)'
-    }
+    # Save in final_analysis format (6 separate files)
+    save_final_analysis_format(results, output_dir=OUTPUT_DIR)
 
-    print("\nValidating scores against ground truth:")
-    print("-" * 60)
-
-    max_diff_overall = 0
-    all_passed = True
-
-    for our_col, gt_col in column_mapping.items():
-        if gt_col is None:
-            print(f"\n{our_col}: SKIPPED (no ground truth available)")
-            continue
-
-        if gt_col not in ground_truth.columns:
-            print(f"\n{our_col} → {gt_col}: MISSING in ground truth")
-            continue
-
-        # Calculate difference
-        diff = (results[our_col] - ground_truth[gt_col]).abs()
-        max_diff = diff.max()
-        max_diff_overall = max(max_diff_overall, max_diff)
-
-        # Check if passed (within floating point precision)
-        passed = max_diff < 1e-10
-
-        status = "PASS" if passed else "FAIL"
-        print(f"\n{our_col} -> {gt_col}")
-        print(f"  Max difference: {max_diff:.2e}")
-        print(f"  Status: {status}")
-
-        if not passed:
-            all_passed = False
-            # Show which rows differ
-            diff_rows = diff[diff >= 1e-10]
-            if len(diff_rows) > 0:
-                print(f"  Differing rows ({len(diff_rows)}):")
-                for idx, val in diff_rows.head(3).items():
-                    print(f"    {idx}: diff = {val:.2e}")
-
+    # ========================================
+    # FINAL SUMMARY
+    # ========================================
     print("\n" + "="*60)
-    if all_passed:
-        print("ALL VALIDATION TESTS PASSED!")
-    else:
-        print(f"VALIDATION FAILED - Max difference: {max_diff_overall:.2e}")
+    print("PROCESSING COMPLETE")
+    print("="*60)
+    print(f"Files processed:     {len(all_filenames)}")
+    print(f"Word distributions:  {num_generated} generated")
+    print(f"Sentiment scores:    {len(results)} rows x {len(results.columns)} columns")
+    print(f"\nOutputs saved to: {OUTPUT_DIR}")
+    print(f"  6 CSV files:")
+    print(f"    - Sentiment_scores_other.csv")
+    print(f"    - progress_scores_main.csv")
+    print(f"    - Sentiment_ChatGPT.csv")
+    print(f"    - Optimism_abbr_industry_1708.csv")
+    print(f"    - Industrialization_1643.csv")
+    print(f"    - Industrialization_appleby.csv")
     print("="*60)

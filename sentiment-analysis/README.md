@@ -1,45 +1,20 @@
-# Historical Text Sentiment Analysis Tool
-
-A unified Python toolkit for calculating multi-dimensional sentiment scores from historical book volumes using various sentiment dictionaries. This tool consolidates multiple Jupyter notebook workflows into a single, maintainable script.
-
-## Overview
-
-This project analyzes historical book volumes from the HathiTrust Digital Library using multiple sentiment dictionaries to measure:
-- **Progress** - Words indicating advancement and development
-- **Optimism/Pessimism** - Positive and negative sentiment
-- **Regression** - Words indicating decline or backward movement
-- **Industrialization** - Terms related to industrial development
-- **ChatGPT-derived Progress** - Modern AI-generated progress indicators
-
-The tool supports both **simple (unweighted)** and **weighted** scoring methodologies, with results validated against original research outputs to ensure perfect accuracy.
-
-## Features
-
-- **Unified Sentiment Scoring**: Single script handles all dictionary types and methodologies
-- **Word Distribution Generation**: Convert raw text to word frequency distributions
-- **Multiple Dictionaries**: Support for 7 different sentiment dictionaries
-- **Two Scoring Methods**:
-  - Simple: Sum of percentage values for matching words
-  - Weighted: Count × weight / total_words formula
-- **Porter Stemming**: Automatic word normalization where needed
-- **Batch Processing**: Efficiently process thousands of volumes
+# Historical Text Sentiment Analysis Pipeline
 
 ## Project Structure
 
 ```
 sentiment-analysis/
 ├── README.md                           # This file
-├── sentiment_scorer.py                 # Main unified scoring script
+├── sentiment_scorer.py                 # Main automated pipeline script
 ├── DICTIONARY_TO_OUTPUT_MAPPING.md     # Dictionary to output column mapping
 └── dictionaries/                       # Sentiment dictionaries
     ├── README.md                       # Dictionary documentation
-    ├── Updated Progress List.csv       # Main progress dictionary (4 metrics)
-    ├── Updated Progress List May 2023.csv  # 1708 dictionary version
+    ├── Sentiment Scores Other.csv      # Main progress dictionary (4 metrics)
+    ├── Progress Scores Main.csv        # 1708 dictionary version (2 metrics)
     ├── ChatGPT Progress Dictionary.csv # AI-generated progress words
-    ├── Industrialization Dictionary (June 23).csv  # Simple industrial dict
-    ├── Industrialization Dictionary (May 24).csv   # Weighted industrial dict (1643 cut)
-    ├── Industry and Optimism Dictionary (May 2025).csv  # Industrial + optimism
-    └── APPLEBY'S TOC (3-vote Threshold).csv  # Full weighted industrial dict
+    ├── Industry and Optimism Dictionary.csv  # Industrial + optimism (2 metrics)
+    ├── 1643 Dictionary.csv             # Weighted industrial dict (1643 cut)
+    └── Appleby Dictionary.csv          # Full weighted industrial dict
 ```
 
 ## Installation
@@ -57,79 +32,95 @@ sentiment-analysis/
 pip install pandas tqdm nltk
 
 # Download NLTK data (for Porter Stemmer)
-python -c "import nltk; nltk.download('punkt')"
+python -c "import nltk"
 ```
+
+## How It Works
+
+The script runs a fully automated 6-step pipeline:
+
+### Step 1: Configuration
+Edit the configuration paths at the top of `sentiment_scorer.py` (lines 410-420):
+
+```python
+RAW_TEXT_DIR = r'f:/path/to/your/raw/text/files'
+WORD_DIST_OUTPUT = r'f:/path/to/word/distributions'
+OUTPUT_DIR = r'./output'
+```
+
+- `RAW_TEXT_DIR`: Directory containing your cleaned text files (.txt)
+- `WORD_DIST_OUTPUT`: Directory to save/cache word distributions
+- `OUTPUT_DIR`: Directory for final sentiment score CSV files
+
+### Step 2: Generate Word Distributions 
+- Reads each raw text file from `RAW_TEXT_DIR`
+- Counts word frequencies (excludes words appearing only once)
+- Saves CSV with columns: `word`, `count`, `pct`, `total_words`
+- Skips files that already have distributions
+
+### Step 3: Load Dictionaries 
+- Loads 6 dictionary files containing 11 total metrics
+- Applies Porter stemming where needed
+- Separates into simple (9 metrics) and weighted (2 metrics) dictionaries
+
+### Step 4: Create Volume Index 
+- Indexes all word distribution files
+- Converts filenames to HathiTrust IDs for tracking
+
+### Step 5: Score All Volumes 
+- Loads each volume CSV once
+- Scores against all 11 metrics in memory
+- Volume-first iteration: 264K disk reads 
+- Processes ~50 volumes/second on typical hardware
+
+### Step 6: Save Results 
+- Splits results into 6 separate CSV files for analysis
+- All files share the same index (volume filenames)
+- Ready for downstream statistical analysis
 
 ## Usage
 
-### 1. Generate Word Distributions from Raw Text
+### Running the Pipeline
 
-Convert raw cleaned text files into word frequency distributions:
+1. **Configure paths** in `sentiment_scorer.py`:
 
-```python
-from sentiment_scorer import generate_all_distributions
-
-# Generate distributions for a list of files
-source_dir = '/path/to/raw/text/files'
-output_dir = './word_distributions'
-filenames = ['book1.txt', 'book2.txt', 'book3.txt']
-
-generate_all_distributions(source_dir, output_dir, filenames)
-```
-
-**Output format** (CSV with columns):
-- `word` (index): The word
-- `count`: Number of occurrences (must be > 1)
-- `pct`: Percentage of total word count
-- `total_words`: Total word count for the volume
-
-### 2. Load Sentiment Dictionaries
+Open the script and edit the configuration section (around lines 410-420):
 
 ```python
-from sentiment_scorer import load_dictionaries
-
-# Load all dictionaries
-simple_dicts, weighted_dicts = load_dictionaries()
-
-# simple_dicts contains: Progress, Optimism, Pessimism, Regression,
-#                        Main, Secondary, ChatGPT_Progress, etc.
-# weighted_dicts contains: APPLEBY_3vote, Industrial_May24
+# Configuration
+RAW_TEXT_DIR = r'f:/path/to/your/raw/text/files'
+WORD_DIST_OUTPUT = r'f:/path/to/word/distributions'
+OUTPUT_DIR = r'./output'
 ```
 
-### 3. Score Individual Volumes
+2. **Run the script**:
 
-```python
-from sentiment_scorer import score_volume_simple, score_volume_weighted
-
-# Simple scoring (unweighted)
-progress_score = score_volume_simple(
-    './word_distributions/book1.txt',
-    simple_dicts['Progress']
-)
-
-# Weighted scoring
-industrial_score = score_volume_weighted(
-    './word_distributions/book1.txt',
-    weighted_dicts['Industrial_May24']
-)
+```bash
+cd sentiment-analysis
+python sentiment_scorer.py
 ```
 
-### 4. Batch Score All Volumes
+3. **Monitor progress**:
 
-```python
-from sentiment_scorer import score_all_volumes
+The script will display progress for each step:
+- Step 1: Finding raw text files
+- Step 2: Generating word distributions (with progress bar)
+- Step 3: Loading dictionaries
+- Step 4: Creating volume index
+- Step 5: Scoring all volumes (with progress bar showing vol/sec)
+- Step 6: Saving results
 
-# Score all volumes across all dictionaries
-results_df = score_all_volumes(simple_dicts, weighted_dicts)
+4. **Check results**:
 
-# Save results
-results_df.to_csv('sentiment_scores.csv')
-```
+Find 6 CSV files in `OUTPUT_DIR`:
+- `Sentiment_scores_other.csv` - Progress, Optimism, Pessimism, Regression
+- `progress_scores_main.csv` - Main and Secondary progress scores
+- `Sentiment_ChatGPT.csv` - ChatGPT-generated progress scores
+- `Optimism_abbr_industry_1708.csv` - Industrial and optimism scores
+- `Industrialization_1643.csv` - Weighted industrial scores (1643 cutoff)
+- `Industrialization_appleby.csv` - Full weighted industrial scores
 
-**Output DataFrame structure**:
-- Index: Filename
-- Columns: One column per dictionary/metric (Progress, Optimism, Pessimism, etc.)
-- Values: Sentiment scores (float)
+
 
 ## Scoring Methodologies
 
@@ -148,7 +139,7 @@ score = sum of pct values for all matching words
 
 ### Weighted Scoring
 
-For dictionaries with weights (APPLEBY's TOC, Industrial May24):
+For dictionaries with weights (Appleby Dictionary, 1643 Dictionary):
 
 ```
 score = (sum of count × weight) / total_words
@@ -161,25 +152,19 @@ score = (sum of count × weight) / total_words
 4. Sum all weighted counts
 5. Divide by total words in the volume
 
-## Dictionaries
-
-See [dictionaries/README.md](dictionaries/README.md) for detailed descriptions of each dictionary.
 
 ### Quick Reference
 
 | Dictionary File | Type | Metrics | Description |
 |----------------|------|---------|-------------|
-| Updated Progress List.csv | Simple | 4 | Progress, Optimism, Pessimism, Regression |
-| Updated Progress List May 2023.csv | Simple | 2 | Main (post-1643), Secondary (1708 dict) |
-| ChatGPT Progress Dictionary.csv | Simple | 1 | AI-generated progress indicators |
-| Industrialization Dictionary (June 23).csv | Simple | 1 | 160 industrial terms (not used in main analysis) |
-| Industrialization Dictionary (May 24).csv | Weighted | 1 | 160 industrial terms with weights (1643 cut) |
-| Industry and Optimism Dictionary (May 2025).csv | Simple | 2 | Industrial prior + Optimism double meaning |
-| APPLEBY'S TOC (3-vote Threshold).csv | Weighted | 1 | 207 industrial terms (full dictionary) |
+| Sentiment Scores Other.csv | Simple | 4 | Progress, Optimism, Pessimism, Regression |
+| Progress Scores Main.csv | Simple | 2 | Main (post-1643), Secondary (1708 dict) |
+| ChatGPT Progress Dictionary.csv | Simple | 1 | AI-generated progress dictionary |
+| Industry and Optimism Dictionary.csv | Simple | 2 | Industrial prior + Optimism double meaning |
+| 1643 Dictionary.csv | Weighted | 1 | 160 industrial terms with weights (1643 cut) |
+| Appleby Dictionary.csv | Weighted | 1 | 207 industrial terms (full dictionary) |
 
 ## Word Distribution Methodology
-
-The word distribution generation follows the exact methodology from original Jupyter notebooks:
 
 1. **Read raw text** - UTF-8 encoded cleaned text files
 2. **Split into words** - Whitespace-separated tokenization
@@ -189,74 +174,26 @@ The word distribution generation follows the exact methodology from original Jup
 6. **Add metadata** - Include total_words column
 7. **Save to CSV** - Word as index, count, pct, total_words columns
 
-**Important**: Words appearing only once are excluded from distributions, matching the original notebook behavior.
 
-## Validation
+### Word Distribution Format
 
+Each word distribution CSV contains:
+- `word` (index): The word
+- `count`: Number of occurrences 
+- `pct`: Percentage of total word count
+- `total_words`: Total word count for the volume
 
-See [DICTIONARY_TO_OUTPUT_MAPPING.md](DICTIONARY_TO_OUTPUT_MAPPING.md) for mappings between dictionary files and original output columns.
+## Output Files
 
-## Output Column Naming
+The script generates 6 separate CSV files optimized for downstream analysis:
 
-Results are saved with descriptive column names:
+| Output File | Source Dictionary | Columns | Description |
+|------------|------------------|---------|-------------|
+| Sentiment_scores_other.csv | Sentiment Scores Other.csv | Progress, Optimism, Pessimism, Regression | Core sentiment metrics |
+| progress_scores_main.csv | Progress Scores Main.csv | Main, Secondary | Main and 1708 progress scores |
+| Sentiment_ChatGPT.csv | ChatGPT Progress Dictionary.csv | ChatGPT_Progress | AI-generated progress metric |
+| Optimism_abbr_industry_1708.csv | Industry and Optimism Dictionary.csv | Industrialization_Prior, Optimism_Double_Meaning | Industrial and optimism metrics |
+| Industrialization_1643.csv | 1643 Dictionary.csv | Dict_1643 | Weighted industrial scores (1643 cutoff) |
+| Industrialization_appleby.csv | Appleby Dictionary.csv | Appleby | Full weighted industrial scores |
 
-| Column Name | Dictionary | Metric |
-|------------|-----------|--------|
-| Progress | Updated Progress List | Progress sentiment |
-| Optimism | Updated Progress List | Optimism sentiment |
-| Pessimism | Updated Progress List | Pessimism sentiment |
-| Regression | Updated Progress List | Regression sentiment |
-| Main | Updated Progress List May 2023 | Main progress (post-1643) |
-| Secondary | Updated Progress List May 2023 | Secondary progress (1708) |
-| ChatGPT_Progress | ChatGPT Progress Dictionary | ChatGPT progress |
-| Industrial_June23 | Industrialization Dictionary (June 23) | Simple industrial |
-| Industrial_May24 | Industrialization Dictionary (May 24) | Weighted industrial (1643) |
-| Industrialization_Prior | Industry and Optimism (May 2025) | Industrial prior |
-| Optimism_Double_Meaning | Industry and Optimism (May 2025) | Optimism double meaning |
-| APPLEBY_3vote | APPLEBY'S TOC | Full industrial dictionary |
-
-## Technical Details
-
-
-### Performance
-
-- **Word distribution generation**: ~10-20 volumes/second (varies by file size)
-- **Scoring**: ~100-130 volumes/second for simple dictionaries, ~100-120 for weighted
-- **Memory efficient**: Processes files individually, suitable for large datasets
-
-## Example Workflow
-
-Complete workflow for processing new volumes:
-
-```python
-import pandas as pd
-from sentiment_scorer import (
-    generate_all_distributions,
-    load_dictionaries,
-    score_all_volumes
-)
-
-# Step 1: Generate word distributions
-source_dir = '/path/to/cleaned/text'
-output_dir = './word_distributions'
-
-# Get list of all text files
-import os
-filenames = [f for f in os.listdir(source_dir) if f.endswith('.txt')]
-
-# Generate distributions
-generate_all_distributions(source_dir, output_dir, filenames)
-
-# Step 2: Load dictionaries
-simple_dicts, weighted_dicts = load_dictionaries()
-
-# Step 3: Score all volumes
-results = score_all_volumes(simple_dicts, weighted_dicts)
-
-# Step 4: Save results
-results.to_csv('sentiment_analysis_results.csv')
-
-print(f"Processed {len(results)} volumes across {len(results.columns)} metrics")
-```
-
-
+All files share the same index (volume filenames) for easy merging.
