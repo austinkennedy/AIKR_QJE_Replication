@@ -120,6 +120,7 @@ HOURLY_*.md
 *_PHASE_*.txt
 *_ISSUE.txt
 *.csv
+!sentiment-analysis/dictionaries/*.csv
 
 # Comparison and analysis files
 compare_*.py
