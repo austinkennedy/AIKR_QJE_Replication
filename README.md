@@ -75,7 +75,7 @@ See [`final_analysis/README.md`](final_analysis/README.md) for detailed analysis
 
 ### Stage 2: Text Preprocessing
 - `Preprocessing/` - HTRC text preprocessing pipeline
-  - `preprocess_htrc.py` - Main preprocessing script (validated, production-ready)
+  - `preprocess_htrc.py` - Main preprocessing script
   - `reference_data/` - Required dictionary files (corrections, modern/archaic mappings, etc.)
   - See [`Preprocessing/README.md`](Preprocessing/README.md) for details
 
