@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 The data for this part of the analysis can be found in the `final_analysis_input` folder in our data repository: [Data For Replication](https://www.dropbox.com/scl/fo/2qg8lv11j41ytjp2ru3k7/AHfF5xuQUVdtFNYKjcwMBa0?rlkey=py6mt8kztk72g8ity4hqlpbqc&st=9d8zn45r&dl=0)
 
-This data includes the output of Stages 1-3 of the pipeline as detailed in [`README.md`](README.md) in the repository.
+This data includes the output of Stages 1-3 of the pipeline as detailed in [`README.md`](README.md) in the parent directory.
 
 Those wishing to replicate the final analysis should either run Stages 1-3 of the pipeline or download the data from the repository, then create a directory named `data` within the `final_analysis` directory, and place the `final_analysis_input` folder and files into the `data` directory. Alternatively, one could store the data elsewhere and change the `input_path` parameters in the config files, as detailed below.
 
@@ -52,6 +52,8 @@ The following is a table of data files provided in the `final_analysis_input` fo
 | `Sentiment_scores_other.csv` | The sentiment scores for "Optimism", "Pessimism", "Regression", and the "Progress" dictionary including words first used after 1643 |
 | `translations.csv` | Contains flags for volumes that are translations. |
 | `progress_scores_main.csv` | Scores for the "progress" dictonaries used in the main analysis (excluding words after 1643), as well as the 1708 dictionary. |
+
+Any files in the above list that are not created by Stages 1-3 can be downloaded from the `final_anlaysis_input` folder in the data repository.
 
 ## Scripts
 
