@@ -77,13 +77,11 @@ See [`final_analysis/README.md`](final_analysis/README.md) for detailed analysis
 - `Preprocessing/` - HTRC text preprocessing pipeline
   - `preprocess_htrc.py` - Main preprocessing script (validated, production-ready)
   - `reference_data/` - Required dictionary files (corrections, modern/archaic mappings, etc.)
-  - `test/` - Comprehensive test suite
   - See [`Preprocessing/README.md`](Preprocessing/README.md) for details
 
 ### Stage 3: MALLET Topic Modeling
 - `LDA/` - MALLET topic modeling
   - `mallet_LDA.sh` - Main topic modeling script
-  - `mallet_inference.sh` - Apply trained model to new documents
   - See [`LDA/README.md`](LDA/README.md) for details
 
 ### Stage 4: Final Analysis
@@ -99,7 +97,7 @@ See [`final_analysis/README.md`](final_analysis/README.md) for detailed analysis
 
 ### Stage 1: Get Unique Volumes
 
-The volume deduplication pipeline is implemented in Jupyter notebooks that process HTRC workset metadata to identify and select unique volumes while handling serial publications intelligently.
+The volume deduplication pipeline is implemented in Jupyter notebooks that process HTRC workset metadata to identify and select unique volumes.
 
 **Requirements:**
 - Python 3.8+
@@ -115,7 +113,7 @@ jupyter notebook "Get Unique Volumes for Rsync.ipynb"
 ```
 
 **Output:**
-- `deduplicated_volume_list.txt` - List of 264,825 unique volume IDs ready for download
+- `deduplicated_volume_list.txt` - List of unique volume IDs ready for download
 
 For detailed documentation, see `Get Unique Volumes/README.md`.
 
@@ -161,7 +159,6 @@ python preprocess_htrc.py --input INPUT_DIR --output OUTPUT_DIR
 - One `.txt` file per input volume
 - Each line: `word frequency`
 - Words sorted by frequency (descending)
-- Empty files (0 bytes) for volumes with no clean text after filtering
 
 For detailed documentation, see `Preprocessing/README.md`.
 
@@ -169,40 +166,12 @@ For detailed documentation, see `Preprocessing/README.md`.
 
 The code stored in the `lda` directory implements MALLET (MAchine Learning for LanguagE Toolkit) topic modeling to extract 60 topics from the historical corpus. This produces the LDA output files that are used as input for the Final Analysis pipeline.
 
-The topic modeling framework uses fixed model parameters for exact reproducibility:
-- **Number of topics:** 60 (hardcoded)
-- **Random seed:** 1 (hardcoded)
-- **Optimization interval:** 500 (hardcoded)
-
-Infrastructure parameters (paths, compute resources) are fully configurable via `lda/config.sh` file.
-
 **Requirements:**
 - MALLET installed and in PATH
 - Java 1.8 or higher
 - Bash 4.0+
 - SLURM (optional, for HPC environments)
 
-**Quick Start:**
-
-1. Navigate to the LDA directory:
-   ```bash
-   cd lda
-   ```
-
-2. Create configuration file:
-   ```bash
-   cp config.template.sh config.sh
-   vim config.sh  # Edit INPUT_DIR, OUTPUT_DIR, STOPLIST_FILE
-   ```
-
-3. Run topic modeling:
-   ```bash
-   # Local execution
-   ./final_mallet_2025.sh
-
-   # Or submit to SLURM
-   sbatch final_mallet_2025.sh
-   ```
 
 **Output Files:**
 
@@ -212,14 +181,6 @@ The LDA pipeline produces several output files in the specified output directory
 - `model.mallet` - Trained topic model
 - `inferencer.mallet` - For applying model to new documents
 - `diagnostics.xml` - Training diagnostics
-
-**Documentation:**
-
-For detailed documentation, see:
-- `lda/README.md` - Complete documentation with all options
-- `lda/QUICKSTART.md` - 30-second quick reference
-- `lda/DEPLOY.md` - Step-by-step HPC deployment guide
-- `lda/test/README_TESTING.md` - Testing framework documentation
 
 
 ### Stage 4: Final Analysis
@@ -269,9 +230,6 @@ For more detailed documentation, see `final_analysis/README.md`.
 
 - **Issue**: Missing NLTK data
   - **Solution**: Run `python -m nltk.downloader wordnet`
-
-- **Issue**: Empty output files
-  - **Solution**: This is expected behavior for volumes with no clean text after filtering (683 files, 0.26% of corpus)
 
 ### Stage 3: LDA
 - **Issue**: Java heap space errors
