@@ -25,7 +25,7 @@ INPUT_DIR=""
 OUTPUT_DIR=""
 
 # ============================================================================
-# DICTIONARY FILES (Required for replication)
+# DICTIONARY FILES
 # ============================================================================
 # These files should be in the reference_data/ directory.
 # Default paths assume you're running from the Preprocessing/ directory.
