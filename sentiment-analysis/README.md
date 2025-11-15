@@ -7,10 +7,10 @@ sentiment-analysis/
 ├── README.md                           # This file
 ├── sentiment_scorer.py                 # Main automated pipeline script
 └── dictionaries/                       # Sentiment dictionaries
-    ├── Sentiment Scores Other.csv      # Main progress dictionary (4 metrics)
-    ├── Progress Scores Main.csv        # 1708 dictionary version (2 metrics)
+    ├── Sentiment Scores Other.csv      # Optimism, Pessimism, Regression, and Progress (including post-1643) (4 metrics)
+    ├── Progress Scores Main.csv        # Progress excluding post-1643, and 1708 dictionary version (2 metrics)
     ├── ChatGPT Progress Dictionary.csv # AI-generated progress words
-    ├── Industry and Optimism Dictionary.csv  # Industrial + optimism (2 metrics)
+    ├── Industry and Optimism Dictionary.csv  # Industrial (1708 verion) + optimism (double meanings removed) (2 metrics)
     ├── 1643 Dictionary.csv             # Weighted industrial dict (1643 cut)
     └── Appleby Dictionary.csv          # Full weighted industrial dict
 ```
@@ -111,10 +111,10 @@ The script will display progress for each step:
 4. **Check results**:
 
 Find 6 CSV files in `OUTPUT_DIR`:
-- `Sentiment_scores_other.csv` - Progress, Optimism, Pessimism, Regression
-- `progress_scores_main.csv` - Main and Secondary progress scores
+- `Sentiment_scores_other.csv` - Progress (including post-1643 words), Optimism, Pessimism, Regression
+- `progress_scores_main.csv` - Main (excluding post-1643 words) and Secondary (1708 dictionary) progress scores
 - `Sentiment_ChatGPT.csv` - ChatGPT-generated progress scores
-- `Optimism_abbr_industry_1708.csv` - Industrial and optimism scores
+- `Optimism_abbr_industry_1708.csv` - Industrial (1708 version) and optimism (double meaning removed) scores
 - `Industrialization_1643.csv` - Weighted industrial scores (1643 cutoff)
 - `Industrialization_appleby.csv` - Full weighted industrial scores
 
@@ -155,10 +155,10 @@ score = (sum of count × weight) / total_words
 
 | Dictionary File | Type | Metrics | Description |
 |----------------|------|---------|-------------|
-| Sentiment Scores Other.csv | Simple | 4 | Progress, Optimism, Pessimism, Regression |
-| Progress Scores Main.csv | Simple | 2 | Main (post-1643), Secondary (1708 dict) |
+| Sentiment Scores Other.csv | Simple | 4 | Progress (including post-1643 words), Optimism, Pessimism, Regression |
+| Progress Scores Main.csv | Simple | 2 | Main (excluding post-1643 words), Secondary (1708 dict) |
 | ChatGPT Progress Dictionary.csv | Simple | 1 | AI-generated progress dictionary |
-| Industry and Optimism Dictionary.csv | Simple | 2 | Industrial prior + Optimism double meaning |
+| Industry and Optimism Dictionary.csv | Simple | 2 | Industrial (1708 version) + Optimism (double meaning removed) |
 | 1643 Dictionary.csv | Weighted | 1 | 160 industrial terms with weights (1643 cut) |
 | Appleby Dictionary.csv | Weighted | 1 | 207 industrial terms (full dictionary) |
 
@@ -187,10 +187,10 @@ The script generates 6 separate CSV files optimized for downstream analysis:
 
 | Output File | Source Dictionary | Columns | Description |
 |------------|------------------|---------|-------------|
-| Sentiment_scores_other.csv | Sentiment Scores Other.csv | Progress, Optimism, Pessimism, Regression | Core sentiment metrics |
-| progress_scores_main.csv | Progress Scores Main.csv | Main, Secondary | Main and 1708 progress scores |
+| Sentiment_scores_other.csv | Sentiment Scores Other.csv | Progress, Optimism, Pessimism, Regression | "Optimism", "Pessimism", "Regression", and "Progress" (including post-1643 words) |
+| progress_scores_main.csv | Progress Scores Main.csv | Main, Secondary | Main (excluding post-1643 words) and 1708 progress scores |
 | Sentiment_ChatGPT.csv | ChatGPT Progress Dictionary.csv | ChatGPT_Progress | AI-generated progress metric |
-| Optimism_abbr_industry_1708.csv | Industry and Optimism Dictionary.csv | Industrialization_Prior, Optimism_Double_Meaning | Industrial and optimism metrics |
+| Optimism_abbr_industry_1708.csv | Industry and Optimism Dictionary.csv | Industrialization_Prior, Optimism_Double_Meaning | Industrial (1708 version) and optimism (double meaning removed) metrics |
 | Industrialization_1643.csv | 1643 Dictionary.csv | Dict_1643 | Weighted industrial scores (1643 cutoff) |
 | Industrialization_appleby.csv | Appleby Dictionary.csv | Appleby | Full weighted industrial scores |
 
