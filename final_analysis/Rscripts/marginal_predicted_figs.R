@@ -204,6 +204,18 @@ predicted_fig <- ggplot(predicted, aes(x = bin, y = fit, group = label)) +
 
 ggsave(paste(path, '/predicted_values.png', sep=''), width = 8, dpi = 300)
 
+#create black and white version with symbols
+predicted_fig_bw <- ggplot(predicted, aes(x = bin, y = fit, group = label)) +
+  geom_line(aes(color = label, linetype = label)) +
+  geom_point(aes(shape = label, color = label), size = 2) +
+  geom_ribbon(aes(y = fit, ymin = lwr, ymax = upr, fill = label), alpha = 0.2) +
+  labs(title = "Predicted Values", x = "Year", y = "Value") +
+  scale_color_grey(start = 0.0, end = 0.6) +
+  scale_fill_grey(start = 0.0, end = 0.6) +
+  theme_light()
+
+ggsave(paste(path, '/predicted_values_bw.png', sep=''), width = 8, dpi = 300)
+
 ######figure with varying weights of PE and Science
 
 s100_p <- pred(lm = model_marginal_predicted, sci = 1, rel = 0, flex = 0)
@@ -511,6 +523,25 @@ predicted_fig <- ggplot(pred_combined, aes(x = bin, y = fit, group = label)) +
 print(predicted_fig)
 
 ggsave(paste(path, '/predicted_values_sci_pe.png', sep =''), width = 13.5, dpi = 300)
+
+#make black and white version
+predicted_fig_bw <- ggplot(pred_combined, aes(x = bin, y = fit, group = label)) +
+  geom_line(aes(color = label, linetype = label)) +
+  geom_point(aes(shape = label, color = label), size = 2) +
+  geom_ribbon(aes(ymin = lwr, ymax = upr, fill = label), alpha = 0.2) +
+  labs(
+    x = "Year",
+    y = "Predicted Value"
+  ) +
+  scale_color_grey(start = 0.6, end = 0.0) +
+  scale_fill_grey(start = 0.6, end = 0.0) +
+  theme_light() +
+  theme(axis.text = element_text(size=10),
+        legend.text = element_text(size=12),
+        legend.title = element_text(size = 12),
+        axis.title = element_text(size = 12))
+
+ggsave(paste(path, '/predicted_values_sci_pe_bw.png', sep =''), width = 13.5, dpi = 300)
 
 }
 }
